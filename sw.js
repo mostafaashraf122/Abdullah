@@ -1,6 +1,6 @@
 /* Spark service worker: opens without internet + shows the push notifications.
    Page = network first (so updates land fast), cached copy when offline. */
-const CACHE='spk-v1';
+const CACHE='spk-v2';
 const CORE=['./','./index.html','./plan.js','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-maskable.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE&&k!=='spk-meta'&&k.indexOf('spk-quran')!==0).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
@@ -25,9 +25,9 @@ self.addEventListener('push',e=>{
   let d={};try{d=e.data?e.data.json():{};}catch(x){d={body:e.data?e.data.text():''};}
   const title=d.title||'سبارك';
   /* Android: each reminder has its own vibration rhythm, so you know it without looking */
-  const VIB={fajr:[400,150,400,150,800],dhuhr:[300,120,300],asr:[300,120,300],maghrib:[300,120,300],isha:[300,120,300],wake:[100,80,100,80,100,80,500],train:[60,60,60,60,400],walk:[600],breakfast:[80,40,80,40,80],leave:[200,100,600],focus:[60,300,60],home:[400,200,200],moti:[50,50,50,50,50,50,50],story:[700,200,100],read:[150,150,150],review:[100,400,100],wind:[500,300,300,300,150],sleep:[1000],away:[100,600,100,600,100],dhikr:[200,200,200,200,200],azkar_m:[250,150,250],azkar_e:[250,150,250],friday:[300,120,300]};
+  const VIB={fajr:[400,150,400,150,800],dhuhr:[300,120,300],asr:[300,120,300],maghrib:[300,120,300],isha:[300,120,300],wake:[100,80,100,80,100,80,500],train:[60,60,60,60,400],walk:[600],breakfast:[80,40,80,40,80],leave:[200,100,600],focus:[60,300,60],home:[400,200,200],moti:[50,50,50,50,50,50,50],story:[700,200,100],read:[150,150,150],review:[100,400,100],wind:[500,300,300,300,150],sleep:[1000],away:[100,600,100,600,100],dhikr:[200,200,200,200,200],azkar_m:[250,150,250],azkar_e:[250,150,250],friday:[300,120,300],fj1:[400,150,400,150,400],fj2:[800,200,800,200,800],fj3:[800,200,800,200,800],fjn:[300,300,300],task:[150,80,150],goal:[150,80,150,80,300],chk:[100,100,100]};
   const opts={body:d.body||'افتح يومك',icon:'icon-192.png',badge:'icon-192.png',tag:d.tag||('spk-'+(d.k||'n')),renotify:true,
-    vibrate:VIB[d.k]||[200,100,200],lang:'ar',dir:'rtl',data:{go:d.go||'day',k:d.k||'',body:d.body||'',at:Date.now()},requireInteraction:d.k==='wake'||d.k==='fajr'};
+    vibrate:VIB[d.k]||[200,100,200],lang:'ar',dir:'rtl',data:{go:d.go||'day',k:d.k||'',body:d.body||'',at:Date.now()},requireInteraction:d.k==='wake'||d.k==='fajr'||d.k==='fj2'};
   e.waitUntil((async()=>{
     await self.registration.showNotification(title,opts);
     try{const c=await caches.open('spk-meta');await c.put('./__lastpush',new Response(JSON.stringify({t:Date.now(),k:d.k||''})));}catch(x){}

@@ -1,4 +1,59 @@
-<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="theme-color" content="#140a2e"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23140a2e'/%3E%3Ccircle cx='32' cy='32' r='18' fill='none' stroke='%23ff6fd8' stroke-width='6'/%3E%3C/svg%3E"><link rel="apple-touch-icon" href="icon-192.png"><style>html{color-scheme:dark}body{margin:0;font-family:system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style></head><body><title>سبارك · كوتش يومك</title>
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="theme-color" content="#140a2e"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23140a2e'/%3E%3Ccircle cx='32' cy='32' r='18' fill='none' stroke='%23ff6fd8' stroke-width='6'/%3E%3C/svg%3E"><link rel="apple-touch-icon" href="icon-192.png"><style>html{color-scheme:dark}body{margin:0;font-family:system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}/* ---------- Fajr card + plans (tasks, goals, courses) ---------- */
+.fajrc{border-color:rgba(255,209,102,.3)}
+.fj-st{font-size:15px;margin:2px 0 8px}.fj-st.ok{color:var(--mint)}.fj-st.warn{color:var(--ember)}
+.fj-btns{display:flex;gap:8px;margin-bottom:10px}.fj-btns .minibtn{flex:1;padding:10px;font-size:14.5px}
+.fj-dots{display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:4px;margin:6px 0}
+.fj-dots i{display:block;aspect-ratio:1;border-radius:50%;background:var(--line);border:1px solid var(--line2)}
+.fj-dots i.ok{background:var(--gold2);border-color:var(--gold2);box-shadow:0 0 8px rgba(255,209,102,.4)}
+.fj-dots i.ms{background:transparent;border-color:rgba(255,138,76,.55)}
+.fj-dots i.now{outline:2px solid var(--frost);outline-offset:1px}
+.fj-meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:12.5px;color:var(--frost)}
+.fj-meta b,.fj-plan b{color:var(--text)}
+.fj-plan{margin-top:10px;font-size:13px;color:var(--frost);padding:10px;border-radius:12px;background:rgba(7,11,20,.45);border:1px solid var(--line)}
+.fj-tip{margin-top:8px;font-size:13px;color:var(--frost)}
+.fj-tog{display:flex;align-items:center;gap:10px;width:100%;margin-top:10px;padding:10px;border-radius:12px;border:1px solid var(--line2);background:transparent;color:var(--text);font:inherit;text-align:start;cursor:pointer}
+.fj-tog small{display:block;font-size:11.5px;color:var(--frost)}
+.fj-tog .sw{flex:none;width:38px;height:22px;border-radius:12px;background:var(--line2);position:relative;transition:background .2s}
+.fj-tog .sw i{position:absolute;top:3px;inset-inline-start:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:inset-inline-start .2s}
+.fj-tog.on .sw{background:var(--gold2)}.fj-tog.on .sw i{inset-inline-start:19px}
+.plans{border-color:rgba(76,201,240,.28)}
+.plans .rsub{margin-top:14px}
+.pl-chk{padding:12px;border-radius:14px;margin-bottom:10px;border:1px solid rgba(124,242,156,.35);background:linear-gradient(90deg,rgba(124,242,156,.10),rgba(124,242,156,.02))}
+.pl-chq{font-size:14px;margin-bottom:8px}.pl-cha{display:flex;flex-wrap:wrap;gap:6px}
+.pl-it,.pl-tk{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:12px;border:1px solid var(--line);background:rgba(7,11,20,.35);margin-bottom:6px}
+.pl-it.now{border-color:var(--sky);box-shadow:0 0 0 1px rgba(76,201,240,.25),0 0 18px rgba(76,201,240,.12)}
+.pl-it.past{opacity:.6}.pl-it.done{opacity:.55}.pl-it.done b{text-decoration:line-through}
+.pl-it.g{border-inline-start:3px solid var(--mint)}
+.pl-tm{flex:none;width:58px;font-size:12px;color:var(--frost);direction:ltr;text-align:center}
+.pl-ic{flex:none;font-size:18px}
+.pl-tx{flex:1;min-width:0}.pl-tx b{display:block;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pl-tx small{display:block;font-size:12px;color:var(--frost)}.pl-tx em{font-style:normal;color:var(--sky)}
+.pl-ok,.pl-sm{flex:none;width:34px;height:34px;border-radius:10px;border:1px solid rgba(124,242,156,.45);background:rgba(124,242,156,.08);color:var(--mint);font-size:16px;cursor:pointer}
+.pl-sm{border-color:var(--line2);background:transparent;color:var(--frost);font-size:14px}
+.pl-next{margin-top:6px}.pl-next summary{cursor:pointer;font-size:13.5px;color:var(--frost);padding:6px 0}
+.pl-day{font-size:12.5px;color:var(--gold2);margin:8px 0 4px}
+.pl-sp{display:flex;align-items:center;gap:12px;width:100%;margin-top:10px;padding:12px;border-radius:14px;border:1px dashed rgba(255,209,102,.5);background:rgba(255,209,102,.05);color:var(--text);font:inherit;text-align:start;cursor:pointer}
+.pl-sp>span:first-child{font-size:26px}.pl-sp small{display:block;font-size:12px;color:var(--frost)}.pl-sp em{margin-inline-start:auto;font-style:normal;color:var(--frost)}
+.pl-g{padding:12px;border-radius:14px;border:1px solid var(--line);background:rgba(7,11,20,.35);margin-bottom:8px}
+.pl-g.paused{opacity:.6}.pl-g.done{border-color:rgba(124,242,156,.5)}
+.pl-gh{display:flex;align-items:center;gap:10px}.pl-gi{font-size:24px;flex:none}
+.pl-gt{flex:1;min-width:0}.pl-gt b{display:block;font-size:15px}.pl-gt small{display:block;font-size:12px;color:var(--frost)}
+.pl-gp{color:var(--mint);font-size:15px}
+.pl-lnk{background:none;border:0;padding:0;font:inherit;color:var(--sky);text-decoration:underline dotted;cursor:pointer}
+.pl-gw{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px}
+.pl-dots{display:flex;gap:4px}.pl-dots i{width:10px;height:10px;border-radius:50%;border:1px solid var(--mint);display:block}.pl-dots i.on{background:var(--mint)}
+.pl-pace{font-size:12.5px;color:var(--frost)}.pl-pace.good{color:var(--mint)}.pl-pace.warn{color:var(--ember)}
+.pl-gn{font-size:12.5px;color:var(--frost);margin-top:6px}.pl-gn b{color:var(--text)}
+.pl-ga{display:flex;gap:6px;align-items:center;margin-top:8px}.pl-ga .svx{margin-inline-start:auto}
+.pl-adds{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start;margin-top:14px}.pl-adds details{flex:1 1 100%}
+.pl-adds details:not([open]){flex:0 0 auto}
+.pl-l{display:grid;gap:4px;font-size:12px;color:var(--frost);min-width:0}
+.pl-l select,.pl-l input{width:100%;min-width:0;background:rgba(7,11,20,.6);border:1px solid var(--line2);border-radius:10px;color:var(--text);padding:8px 10px;font:inherit;font-size:14px}
+.pl-pre{display:flex;flex-wrap:wrap;gap:6px}
+.pl-kind{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.pl-kind button{padding:8px;border-radius:10px;border:1px solid var(--line2);background:transparent;color:var(--frost);font:inherit;font-size:13px;cursor:pointer}
+.pl-kind button.on{border-color:var(--sky);color:var(--text);background:rgba(76,201,240,.1)}
+</style></head><body><title>سبارك · كوتش يومك</title>
 <script>
 /* Spark: who is using the app (set on the first open, changeable from المزيد) */
 window.NM=function(){try{var v=JSON.parse(localStorage.getItem('spk:name'));return (v&&String(v).trim())||'صاحبي';}catch(e){return 'صاحبي';}};
@@ -2917,7 +2972,7 @@ const PAGES=[['today','☀','اليوم'],['soul','☾','الروح'],['money','
 const PG_SUB={soul:'أدعية، أذكار، حفظ، وقصص',money:'ميزانيتك ومصاريفك وتحويشك · على موبايلك بس',coach:'دروس اليوم، المرشد، والتقارير',more:'الإعدادات، الأمان، ومهامك'};
 const TASK_PANELS=['m-rooh','m-jasad','m-nafs','m-bayt','m-waqt','m-ilm','m-career','m-dakhl','m-week'];
 function pageOf(p){const id=p.id||'';
- if(p.classList.contains('core')||id==='simple'||id==='dayflow'||p.querySelector('#signal'))return 'today';
+ if(p.classList.contains('core')||id==='simple'||id==='dayflow'||id==='plans'||id==='fajrC'||p.querySelector('#signal'))return 'today';
  if(TASK_PANELS.indexOf(id)>=0)return 'tasks';
  if(['mushaf','rizq','counters','hifz','stories','mentor','dustur','m-prom','calm'].indexOf(id)>=0)return 'soul';
  if(['money','savings'].indexOf(id)>=0)return 'money';
@@ -3229,7 +3284,7 @@ function setupAskRefresh(){LS.set('setupAsked',0);setupAsk();LS.set('setupAsked'
 const NF=Object.assign({wake:'07:00',workStart:'09:00',workEnd:'17:00',commute:20,sleep:'23:00',workDays:[0,1,2,3,4],off:{}},LS.get('notif')||{});
 const saveNF=()=>{LS.set('notif',NF);nfMark();};
 const nfTZ=()=>{try{return Intl.DateTimeFormat().resolvedOptions().timeZone||'Asia/Riyadh';}catch(e){return 'Asia/Riyadh';}};
-function nfCfg(){return {lat:LOC.lat,lng:LOC.lng,m:LOC.m||'uq',tz:nfTZ(),wake:NF.wake,workStart:NF.workStart,workEnd:NF.workEnd,commute:+NF.commute||0,sleep:NF.sleep,
+function nfCfgBase(){return {lat:LOC.lat,lng:LOC.lng,m:LOC.m||'uq',tz:nfTZ(),wake:NF.wake,workStart:NF.workStart,workEnd:NF.workEnd,commute:+NF.commute||0,sleep:NF.sleep,
   workDays:NF.workDays,train:(S.settings.train||[]).slice(),off:Object.assign({},NF.off),times:ptTimes(45)};}
 const hasPlan=()=>typeof MOSPlan!=='undefined';
 function planToday(){const d=new Date();return hasPlan()?MOSPlan.day(d.getFullYear(),d.getMonth()+1,d.getDate(),nfCfg()):[];}
@@ -3250,17 +3305,17 @@ function buildDayflow(){const sec=el('section','pnl dayflow');sec.id='dayflow';
  $('#dfCta').addEventListener('click',()=>{goPage('more');setTimeout(()=>{const n=$('#notifs');if(n)n.scrollIntoView({behavior:'smooth',block:'start'});},60);});
  renderDayflow(true);setInterval(()=>{if(!document.hidden&&PG==='today')renderDayflow();},20000);}
 let dfLastCur=null,dfTouch=0;
-function renderDayflow(scroll){if(!$('#dayflow')||!hasPlan())return;const L=planToday();const now=new Date();const nm=now.getHours()*60+now.getMinutes()+now.getSeconds()/60;
+function renderDayflow(scroll){if(!$('#dayflow')||!hasPlan())return;const L=planToday().filter(e=>e.tl!==false);const now=new Date();const nm=now.getHours()*60+now.getMinutes()+now.getSeconds()/60;
  const wake=MOSPlan.toMin(NF.wake),sl=MOSPlan.toMin(NF.sleep);
  let cur=null;for(const e of L){if(e.min<=nm)cur=e;}
  const wk=L.find(e=>e.k==='work');const inWork=wk&&nm>=wk.min&&nm<wk.end;
- if(cur&&nm-cur.min>40&&!(inWork))cur=null;
+ if(cur&&nm-cur.min>40&&!(inWork)&&!(cur.end&&cur.k!=='work'&&nm<cur.end))cur=null;
  if(inWork&&cur&&cur.k!=='work'&&nm-cur.min>=25)cur=wk;
  const nxt=L.find(e=>e.min>nm&&e.k!=='work');
  let title,sub;
  if(nm<wake&&!(cur&&cur.k==='fajr'&&nm-cur.min<40)){title='🌙 لسه بدري';sub='الصحيان الساعة '+MOSPlan.fmt(wake)+'. نام كويس.';}
  else if(nm>=sl){title='😴 وقت النوم';sub='اقفل الموبايل وقول أذكار النوم. بكره يوم جديد.';}
- else if(cur&&cur.k!=='work'&&(!inWork||nm-cur.min<25)){title=cur.icon+' '+cur.label;sub=NOWTXT[cur.k]||'';}
+ else if(cur&&cur.k!=='work'&&(!inWork||nm-cur.min<25)){title=cur.icon+' '+cur.label;sub=NOWTXT[cur.k]||(cur.end?'لحد '+MOSPlan.fmt(cur.end)+' · ركّز عليها وبس':'');}
  else if(inWork||(cur&&cur.k==='work')){title='💼 في الشغل';sub='لحد '+MOSPlan.fmt(wk.end)+' · '+pick(DF_FOCUS,3);}
  else{title='✨ وقت حر';sub='استغلّه في حاجة تقرّبك من هدفك.';}
  $('#dfNow').textContent=title;$('#dfNowS').textContent=sub;
@@ -3278,7 +3333,8 @@ function renderDayflow(scroll){if(!$('#dayflow')||!hasPlan())return;const L=plan
  {const g=(typeof SV!=='undefined'&&SV.goals||[]).filter(x=>x&&x.target>0).sort((a,b)=>(gSaved(b)/b.target)-(gSaved(a)/a.target))[0];const gb=$('#dfGoal');
   if(g){const s=gSaved(g),fr=Math.max(0,Math.min(1,s/g.target));gb.innerHTML='<span class="gi">'+esc(g.ic||'🎯')+'</span><span class="gt"><b>هدفك: '+esc(g.n||'')+'</b><small>'+Math.round(s).toLocaleString('en')+' من '+Math.round(g.target).toLocaleString('en')+' · '+pick(DF_FOCUS,1)+'</small><span class="gtr"><i style="width:'+(fr*100).toFixed(1)+'%"></i></span></span><span class="gp mono">'+Math.round(fr*100)+'%</span>';}
   else gb.innerHTML='<span class="gi">🎯</span><span class="gt"><b>حدّد هدف التحويش بتاعك</b><small>الهدف المكتوب بيتحقق أسرع. دوس وابدأ.</small></span><span class="gp">‹</span>';}
- nfCtaRender();autoTick();}
+ nfCtaRender();autoTick();
+ try{if(typeof PL!=='undefined'&&$('#plans')){if(PL.sched&&PL.sched.k!==todayKey())plReplan(false);else{renderPlans();renderFajr();}}}catch(e){}}
 
 /* ---------- open the right place when you tap a notification ---------- */
 function flash(node){if(!node)return;node.classList.remove('flash');void node.offsetWidth;node.classList.add('flash');setTimeout(()=>node.classList.remove('flash'),2200);}
@@ -3291,6 +3347,8 @@ function handleGo(go,inApp){go=String(go||'day');const T=(sel,fn)=>{setTimeout((
   case 'moti':goPage('today');T('#moti',()=>{try{nextMoti();startMoti();}catch(e){}});break;
   case 'story':T('#stories');break;
   case 'read':goPage('today');T('#simple [data-id="read"]');break;
+  case 'plans':goPage('today');T('#plans');break;
+  case 'fajr':goPage('today');T('#fajrC');break;
   case 'goal':goPage('money');T($('#savings')?'#savings':'#money');break;
   case 'review':goPage('today');setTimeout(()=>openReview('today'),250);break;
   case 'gratitude':T('#grat');break;
@@ -3307,7 +3365,7 @@ const nfRepo=()=>{const h=location.hostname;const m=h.match(/^([a-z0-9-]+)\.gith
 const isIOS=()=>/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const isStandalone=()=>!!(navigator.standalone||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches));
 const pushOK=()=>('serviceWorker' in navigator)&&('PushManager' in window)&&('Notification' in window);
-function nfCode(){const sub=LS.get('pushSub'),V=LS.get('vapid');if(!sub||!V)return '';const cfg=nfCfg();delete cfg.times;const j={v:2,pub:V.pub,priv:V.priv,ek:LS.get('syncKey')||'',repo:nfRepo(),branch:'push-config',sub,cfg};return nfB64(new TextEncoder().encode(JSON.stringify(j)));}
+function nfCode(){const sub=LS.get('pushSub'),V=LS.get('vapid');if(!sub||!V)return '';const cfg=nfCfg();delete cfg.times;delete cfg.tasks;delete cfg.fajrDone;const j={v:2,pub:V.pub,priv:V.priv,ek:LS.get('syncKey')||'',repo:nfRepo(),branch:'push-config',sub,cfg};return nfB64(new TextEncoder().encode(JSON.stringify(j)));}
 function nfKeySig(){const V=LS.get('vapid')||{};return nfSig((V.pub||'')+'|'+(V.priv||'')+'|'+(LS.get('syncKey')||'')+'|'+nfRepo());}
 const nfSig=c=>{let h=0;for(let i=0;i<c.length;i++)h=(h*31+c.charCodeAt(i))|0;return String(h);};
 function nfState(){if(!LS.get('pushSub'))return 0;if(LS.get('pushSigK')!==nfKeySig())return 1;return (SY.tok&&!SY.err)||LS.get('pushSig')===nfSig(nfCode())?2:1;}
@@ -3385,7 +3443,7 @@ async function nfHealthData(){
  let last=null;try{const c=await caches.open('spk-meta');const r=await c.match('./__lastpush');if(r)last=await r.json();}catch(e){}
  let since=LS.get('nfHealthSince');if(!since){since=Date.now();LS.set('nfHealthSince',since);}
  const now=Date.now(),from=Math.max(since,now-36*3600e3,last&&last.t?last.t+3*60e3:0);
- let missed=[];try{if(from<now-15*60e3)missed=MOSPlan.events(from,now-15*60e3,nfCfg());}catch(e){}
+ let missed=[];try{if(from<now-15*60e3)missed=MOSPlan.events(from,now-15*60e3,nfCfg()).filter(e=>syncOn()||(e.cat!=='task'&&e.cat!=='fajr'));}catch(e){}
  return {last,missed};}
 async function nfHealth(){const box=$('#nfHealth');if(!box)return;const d=await nfHealthData();if(!d||!$('#nfHealth'))return;
  if(d.missed.length){const e=d.missed[d.missed.length-1];box.className='nfwarn';box.style.marginTop='10px';
@@ -3549,7 +3607,7 @@ async function spkTick(){if(spkBusy||nfState()!==2||!hasPlan())return;spkBusy=tr
   const due=MOSPlan.events(wm+1,now+1,nfCfg());
   if(due.length){await spkMeta('wm',now);
    const e=due[due.length-1];/* only the latest one, never a pile */
-   await spkShow(e.title,{body:e.body,tag:'spk-'+e.k+'-'+e.at,renotify:true,data:{go:e.go,k:e.k,body:e.body},requireInteraction:e.k==='wake'||e.k==='fajr'});
+   await spkShow(e.title,{body:e.body,tag:'spk-'+e.k+'-'+e.at,renotify:true,data:{go:e.go,k:e.k,body:e.body},requireInteraction:e.k==='wake'||e.k==='fajr'||e.k==='fj2'});
    try{if(!document.hidden)CUE.queue(e.k,e.body);}catch(x){}}
   else if(!(await spkMeta('wm')))await spkMeta('wm',now);}
  catch(e){}finally{spkBusy=false;}}
@@ -3657,7 +3715,261 @@ function spkOnboard(force){if(LS.get('onboarded')&&!force)return;if($('#onb'))$(
 setTimeout(()=>{try{spkOnboard(false);}catch(e){console.warn(e);}},500);
 if(LS.get('hello')){LS.set('hello',0);setTimeout(()=>{try{burst(120);}catch(e){}toast('✦','يلا بينا يا '+NM(),'أول خطوة: علّم أي حاجة عملتها النهارده');},1800);}
 
-buildReport();buildHifz();buildMentor();buildCoach();buildMoney();buildSave();buildComm();buildLessons();buildTaskEditor();renderBackup();initLock();persistStorage();initStore();buildQuick();buildSimple();buildDayflow();buildNotifs();setupPages();initGo();autoInit();booted=true;RB.firstRender=true;
+
+/* ---------- مهامي وأهدافي وكورساتي: you add them, the app places them in your day and checks in with you ---------- */
+const PL=Object.assign({tasks:[],goals:[],sched:null,due:[],skip:{},fjMiss:{},at:0},LS.get('plans')||{});
+PL.skip=PL.skip||{};PL.fjMiss=PL.fjMiss||{};PL.due=PL.due||[];
+const savePL=()=>LS.set('plans',PL);
+if(NF.fajrBoost===undefined){NF.fajrBoost=true;LS.set('notif',NF);}
+const PL_GIC=['🇪🇸','🗣','🎓','📚','📖','💻','💪','🕌','🎨','🧠','✍','🎯'];
+const PL_PRESETS=[
+ {t:'كورس الإسباني',ic:'🇪🇸',kind:'course',total:60,unit:'درس',per:5,len:30,pref:'evening'},
+ {t:'مراجعة كلمات إسباني',ic:'🗣',kind:'habit',per:7,len:15,pref:'morning'},
+ {t:'كورس أونلاين',ic:'🎓',kind:'course',total:20,unit:'درس',per:3,len:45,pref:'evening'},
+ {t:'قراية كتاب',ic:'📖',kind:'course',total:200,unit:'صفحة',per:5,len:20,pref:'evening'}];
+const PL_PREF={any:'أي وقت فاضي',morning:'الصبح',evening:'بعد العصر / بالليل'};
+const plMin=()=>{const d=new Date();return d.getHours()*60+d.getMinutes();};
+const plDays=(k,n)=>keyOf(addDays(parseKey(k),n));
+const PL_DAY=['الأحد','الاتنين','التلات','الأربع','الخميس','الجمعة','السبت'];
+function plDayName(k){const t=todayKey();if(k===t)return 'النهارده';if(k===plDays(t,1))return 'بكرة';if(k===plDays(t,-1))return 'امبارح';return PL_DAY[parseKey(k).getDay()]+' '+(+k.slice(8))+'/'+(+k.slice(5,7));}
+const plDur=m=>m>=60?(m%60?Math.floor(m/60)+'س '+(m%60)+'د':(m/60)+' ساعة'):m+' دقيقة';
+const plGoal=id=>PL.goals.find(g=>g.id===id);
+const plTask=id=>PL.tasks.find(x=>x.id===id);
+const plGoalDone=g=>g.kind==='course'&&+g.total>0&&(+g.done||0)>=+g.total;
+function plFajrDone(k){try{if(S.day&&S.day.date===k)return !!(S.day.c&&S.day.c.p_fajr);const h=S.hist&&S.hist[k];return !!(h&&h.fajr);}catch(e){return false;}}
+
+/* the settings the reminders use: your day + Fajr boost + the placed tasks for the next 3 days */
+function nfCfg(){const c=nfCfgBase();c.fajrBoost=NF.fajrBoost!==false;
+ try{const t=todayKey();c.fajrDone=plFajrDone(t)?t:'';c.tasks=plCfgTasks();}catch(e){}return c;}
+function plCfgTasks(){const out={};if(!PL.sched||!PL.sched.days)return out;const t=todayKey();
+ for(let i=0;i<3;i++){const k=plDays(t,i);const L=(PL.sched.days[k]||[]).map(it=>{if(it.g){const g=plGoal(it.id);if(!g||(g.log&&g.log[k]))return null;return {min:it.min,dur:it.dur,t:g.t,ic:g.ic,g:1};}
+   const x=plTask(it.id);if(!x||x.done)return null;return {min:it.min,dur:it.dur,t:x.t,ic:+x.pri===2?'🔥':'📌'};}).filter(Boolean);if(L.length)out[k]=L;}
+ return out;}
+
+/* ---------- the planner: finds the free gaps in your day (after prayers, work, gym, meals…) and places things ---------- */
+const PL_BUSY={wake:[0,15],azkar_m:[0,10],train:[0,45],walk:[0,20],breakfast:[0,20],home:[0,15],azkar_e:[0,10],story:[0,10],read:[0,20],review:[0,10]};
+function plFree(k){const d=parseKey(k);const L=MOSPlan.day(d.getFullYear(),d.getMonth()+1,d.getDate(),nfCfgBase());
+ const wake=MOSPlan.toMin(NF.wake);let sl=MOSPlan.toMin(NF.sleep);if(sl<=wake)sl+=1440;
+ const cm=+NF.commute||0,busy=[];let work=false;
+ L.forEach(e=>{if(e.cat==='prayer'){busy.push([e.min-5,e.min+(e.k==='dhuhr'&&d.getDay()===5?60:20)]);return;}
+  if(e.k==='work'){work=true;busy.push([e.min-cm-10,e.end+cm+10]);return;}
+  const b=PL_BUSY[e.k];if(b)busy.push([e.min+b[0],e.min+b[1]]);});
+ return {st:wake+20,en:sl-30,busy,work,used:0,cap:work?240:360};}
+function plFit(day,dur,after,pref){let lo=Math.max(day.st,after||0),hi=day.en;
+ if(pref==='morning')hi=Math.min(hi,12*60+30);else if(pref==='evening')lo=Math.max(lo,15*60);
+ let s=Math.ceil(lo/5)*5;const B=day.busy.slice().sort((a,b)=>a[0]-b[0]);
+ for(let i=0;i<300;i++){if(s+dur>hi)return null;const hit=B.find(b=>s<b[1]+5&&s+dur+5>b[0]);if(!hit)return s;s=Math.ceil((hit[1]+5)/5)*5;}
+ return null;}
+function plReplan(quiet){if(!hasPlan())return;const t=todayKey(),now=plMin();const old=(PL.sched&&PL.sched.days)||{};
+ /* goal sessions whose time passed without a check-in → ask about them */
+ Object.keys(old).forEach(k=>{if(k>t)return;(old[k]||[]).forEach(it=>{if(!it.g)return;const g=plGoal(it.id);if(!g)return;
+  if((k<t||it.min+it.dur<=now)&&!(g.log&&g.log[k])&&!PL.skip[k+'|'+it.id]&&!PL.due.some(d=>d.d===k&&d.id===it.id))PL.due.push({d:k,id:it.id,min:it.min,dur:it.dur});});});
+ PL.due=PL.due.filter(d=>d.d>=plDays(t,-3)&&plGoal(d.id)&&!(plGoal(d.id).log||{})[d.d]&&!PL.skip[d.d+'|'+d.id]);
+ Object.keys(PL.skip).forEach(k=>{if(k.slice(0,10)<plDays(t,-14))delete PL.skip[k];});
+ PL.tasks=PL.tasks.filter(x=>!x.done||x.done>=plDays(t,-30));
+ const H=14,days={},D={};for(let i=0;i<H;i++){const k=plDays(t,i);D[k]=plFree(k);days[k]=[];}
+ const put=(k,it)=>{days[k].push(it);D[k].busy.push([it.min,it.min+it.dur]);D[k].used+=it.dur;};
+ const has=id=>Object.keys(days).some(k=>days[k].some(i=>i.id===id));
+ const after0=Math.ceil((now+10)/5)*5,aft=k=>k===t?after0:0;
+ const open=PL.tasks.filter(x=>!x.done);
+ /* keep whatever is running right now where it is */
+ (old[t]||[]).forEach(it=>{if(!(it.min<=now&&now<it.min+it.dur))return;if(it.g){const g=plGoal(it.id);if(g&&!(g.log&&g.log[t]))put(t,{id:it.id,g:1,min:it.min,dur:it.dur});}else if(open.some(x=>x.id===it.id))put(t,{id:it.id,min:it.min,dur:it.dur});});
+ /* tasks with a fixed time */
+ open.filter(x=>x.at&&!has(x.id)).forEach(x=>{const k=x.due&&x.due>=t?x.due:t;const m=MOSPlan.toMin(x.at);if(days[k]&&!(k===t&&m+x.dur<=now))put(k,{id:x.id,min:m,dur:x.dur,fix:1});});
+ const flex=x=>{for(let i=0;i<H;i++){const k=plDays(t,i);if(x.nb&&k<x.nb)continue;const d=D[k];if(d.used+x.dur>d.cap&&i<H-1)continue;const s=plFit(d,x.dur,aft(k),'any');if(s!=null){put(k,{id:x.id,min:s,dur:x.dur});return;}}};
+ const dk=x=>x.due||'9999';
+ const rest=open.filter(x=>!has(x.id)).sort((a,b)=>(+b.pri||0)-(+a.pri||0)||(dk(a)<dk(b)?-1:dk(a)>dk(b)?1:0)||(a.c||0)-(b.c||0));
+ rest.filter(x=>+x.pri===2).forEach(flex);
+ /* goal & course sessions: spread evenly over the week, at the time you like */
+ PL.goals.filter(g=>!g.arch&&!plGoalDone(g)).forEach(g=>{const len=+g.len||30;
+  for(let w=0;w<3;w++){const ws=plDays(weekStartKey(t),7*w),we=plDays(ws,6);
+   let need=Math.max(0,(+g.per||0)-Object.keys(g.log||{}).filter(k=>k>=ws&&k<=we&&g.log[k]).length);
+   const cand=[];for(let i=0;i<7;i++){const k=plDays(ws,i);if(k<t||!days[k]||(g.log&&g.log[k])||PL.skip[k+'|'+g.id])continue;if(days[k].some(it=>it.id===g.id)){need--;continue;}cand.push(k);}
+   if(need<=0||!cand.length)continue;const n=Math.min(need,cand.length);const pick=[];
+   for(let j=0;j<n;j++)pick.push(cand[Math.floor((j+0.5)*cand.length/n)]);
+   const order=pick.concat(cand.filter(k=>pick.indexOf(k)<0));let left=n;
+   for(const k of order){if(!left)break;const d=D[k],a=aft(k);let s=null;
+    if(g.time)s=plFit(d,len,Math.max(a,MOSPlan.toMin(g.time)),'any');
+    if(s==null)s=plFit(d,len,a,g.pref||'any');if(s==null)s=plFit(d,len,a,'any');
+    if(s!=null){put(k,{id:g.id,g:1,min:s,dur:len});left--;}}}});
+ rest.filter(x=>+x.pri!==2&&!has(x.id)).forEach(flex);
+ /* tell him what moved */
+ const moved=open.filter(x=>{let was=null;Object.keys(old).forEach(k=>{(old[k]||[]).forEach(i=>{if(i.id===x.id)was={k,i};});});return was&&(was.k<t||(was.k===t&&was.i.min+was.i.dur<=now));});
+ Object.keys(days).forEach(k=>days[k].sort((a,b)=>a.min-b.min));
+ PL.sched={k:t,at:Date.now(),days};PL.at=Date.now();savePL();
+ if(moved.length&&!quiet){const x=moved[0],k=Object.keys(days).find(k=>days[k].some(i=>i.id===x.id));
+  if(k){const it=days[k].find(i=>i.id===x.id);setTimeout(()=>toast('↪','نقلت "'+x.t+'" لـ'+plDayName(k)+' '+MOSPlan.fmt(it.min),moved.length>1?'ومعاها '+(moved.length-1)+' مهمة تانية فاتت':'كانت فاتت ومتعلّمتش'),600);}}
+ try{spkSchedule(false);}catch(e){}try{syncSoon();}catch(e){}
+ renderPlans();try{renderDayflow();}catch(e){}}
+function plWhere(id){if(!PL.sched)return null;const D=PL.sched.days||{};for(const k of Object.keys(D).sort()){const it=D[k].find(i=>i.id===id);if(it)return {k,it};}return null;}
+
+/* ---------- goal progress ---------- */
+function plWeek(g){const t=todayKey(),ws=weekStartKey(t),we=plDays(ws,6);return Object.keys(g.log||{}).filter(k=>k>=ws&&k<=we&&g.log[k]).length;}
+function plPace(g){const t=todayKey();if(g.kind!=='course'||!(+g.total>0)){const w=plWeek(g),per=+g.per||0;const day=parseKey(t).getDay()+1;const exp=Math.floor(per*day/7);
+  return w>=per?{c:'good',s:'✓ خلّصت هدف الأسبوع ('+w+' من '+per+')'}:w+1<exp?{c:'warn',s:'متأخر شوية الأسبوع ده: '+w+' من '+per+'. لسه تلحق'}:{c:'',s:'الأسبوع ده: '+w+' من '+per};}
+ const left=+g.total-(+g.done||0);if(left<=0)return {c:'good',s:'🏆 خلّصته. ما شاء الله'};
+ let u14=0;Object.keys(g.log||{}).forEach(k=>{if(k>plDays(t,-14))u14+=+(g.log[k].u||0);});const perWeek=u14/2;
+ if(g.by){const days=Math.ceil((parseKey(g.by)-parseKey(t))/864e5);if(days<=0)return {c:'warn',s:'الميعاد عدّى · فاضل '+left+' '+g.unit};
+  const need=left/Math.max(1,days/7);const ok=perWeek>=need*0.9;
+  return {c:ok?'good':'warn',s:(ok?'✓ ماشي في معادك':'⚠ محتاج تسرّع')+' · المطلوب '+(Math.ceil(need*10)/10)+' '+g.unit+' في الأسبوع'+(perWeek?' (إنت ماشي '+(Math.round(perWeek*10)/10)+')':'')};}
+ if(perWeek>0){const wk=Math.ceil(left/perWeek);const end=plDays(t,wk*7);return {c:'',s:'بالمعدل ده هتخلّص حوالي '+(+end.slice(8))+'/'+(+end.slice(5,7))+'/'+end.slice(0,4)};}
+ return {c:'',s:'فاضل '+left+' '+g.unit+' · ابدأ أول جلسة وأنا أحسبلك هتخلّص إمتى'};}
+function plCheckins(){const t=todayKey(),now=plMin();const L=PL.due.slice();
+ ((PL.sched&&PL.sched.days&&PL.sched.days[t])||[]).forEach(it=>{if(!it.g||it.min+it.dur>now)return;const g=plGoal(it.id);if(!g||(g.log&&g.log[t])||PL.skip[t+'|'+it.id])return;if(!L.some(d=>d.d===t&&d.id===it.id))L.push({d:t,id:it.id,min:it.min,dur:it.dur});});
+ return L.filter(d=>plGoal(d.id)).sort((a,b)=>a.d<b.d?-1:a.d>b.d?1:a.min-b.min);}
+function plLog(id,k,units,min){const g=plGoal(id);if(!g)return;g.log=g.log||{};const was=g.log[k];
+ g.log[k]={m:(+min||+g.len||30)+(was?was.m:0),u:(+units||0)+(was?(+was.u||0):0)};
+ if(g.kind==='course'){g.done=Math.min(+g.total||1e9,(+g.done||0)+(+units||0));}
+ PL.due=PL.due.filter(d=>!(d.d===k&&d.id===id));savePL();
+ const wk=plWeek(g);
+ if(plGoalDone(g)){try{burst(160);}catch(e){}toast('🏆','ما شاء الله! خلّصت '+g.t,'كل الـ'+g.total+' '+g.unit+'. فخور بيك');}
+ else toast(g.ic,'عاش! سجّلت '+g.t,(g.kind==='course'&&units?'+'+units+' '+g.unit+' · بقيت '+g.done+' من '+g.total+' · ':'')+'الأسبوع ده '+wk+' من '+g.per);
+ plReplan(true);}
+
+/* ---------- Fajr card ---------- */
+const FJ_TIPS=['حط المنبّه بعيد عن السرير، لازم تقوم علشان تقفله','اتوضّا قبل ما تنام وانوِ بقلبك إنك تصحى للفجر','نام بدري: 7 ساعات نوم قبل الفجر','قلّل الموبايل آخر ساعة قبل النوم، النوم بيبقى أعمق','خلّي حد من أهلك أو صاحبك يتصل بيك وقت الفجر','اقرا آخر آيتين من سورة البقرة وأذكار النوم','متشربش شاي أو قهوة بعد العصر','لو صحيت قوم فوراً. أول 10 ثواني هي المعركة كلها','"من صلّى الصبح فهو في ذمة الله" (رواه مسلم)','"ركعتا الفجر خير من الدنيا وما فيها" (رواه مسلم)'];
+function fjMark(ok){const t=todayKey();
+ if(ok){if(S.day&&S.day.date===t){S.day.c.p_fajr=true;saveDay();}else{const d=Object.assign(blankDay(t),LS.get('d-'+t)||{});d.c=d.c||{};d.c.p_fajr=true;save('d-'+t,d);}
+  delete PL.fjMiss[t];savePL();try{burst(90);}catch(e){}const n=(()=>{try{return streak('fajr');}catch(e){return 0;}})();
+  toast('🌅','الله يتقبّل منك',n>1?n+' يوم فجر ورا بعض 🔥 كمّل':'بداية حلوة. بكرة كمان');}
+ else{PL.fjMiss[t]=1;savePL();toast('🤍','ولا يهمك، صلّيها دلوقتي قضاء','والليلة هنظبط النوم بدري سوا');}
+ try{render();}catch(e){}renderFajr();try{spkSchedule(false);}catch(e){}try{syncSoon();}catch(e){}}
+function renderFajr(){const box=$('#fajrC');if(!box||!hasPlan())return;const t=todayKey(),now=plMin(),d=new Date();
+ const c=nfCfgBase();const P=MOSPlan.prayers(d.getFullYear(),d.getMonth()+1,d.getDate(),c);
+ const tm=addDays(d,1);const P2=MOSPlan.prayers(tm.getFullYear(),tm.getMonth()+1,tm.getDate(),c);
+ const done=plFajrDone(t),miss=!!PL.fjMiss[t];
+ let st=0;try{st=streak('fajr');}catch(e){}
+ let n30=0;for(let i=0;i<30;i++)if(plFajrDone(plDays(t,-i)))n30++;
+ $('#fjCnt').textContent='🔥 '+st;
+ const bed=((P2.fajr-15-7*60)%1440+1440)%1440;
+ let h='';
+ if(done)h='<div class="fj-st ok">✓ صليت الفجر النهارده. الله يتقبّل منك</div>';
+ else if(miss)h='<div class="fj-st warn">فاتتك النهارده. صلّيها قضاء لو لسه، والليلة نام بدري وإن شاء الله بكرة في وقتها</div>';
+ else if(now<P.fajr-60)h='<div class="fj-st">الفجر الساعة <b>'+MOSPlan.fmt(P.fajr)+'</b> · نام دلوقتي علشان تصحى</div>';
+ else if(now<P.fajr)h='<div class="fj-st">الفجر بعد <b>'+(P.fajr-now)+' دقيقة</b> · قوم اتوضّا</div>';
+ else h='<div class="fj-st">صليت الفجر النهارده؟</div><div class="fj-btns"><button type="button" class="minibtn gold" data-fj="1">✓ صليته</button><button type="button" class="minibtn" data-fj="0">فاتني</button></div>';
+ h+='<div class="fj-dots" aria-label="آخر 14 يوم">';for(let i=13;i>=0;i--){const k=plDays(t,-i);const ok=plFajrDone(k),ms=!!PL.fjMiss[k]||(!ok&&k<t);h+='<i class="'+(ok?'ok':ms?'ms':'')+(k===t?' now':'')+'" title="'+plDayName(k)+'"></i>';}
+ h+='</div><div class="fj-meta"><span>آخر 30 يوم: <b>'+n30+'</b>/30</span><span>الفجر بكرة: <b>'+MOSPlan.fmt(P2.fajr)+'</b></span></div>'+
+  '<div class="fj-plan">🛏 علشان تاخد 7 ساعات نوم، نام الليلة الساعة <b>'+MOSPlan.fmt(bed)+'</b> · ⏰ حط منبّه حقيقي الساعة <b>'+MOSPlan.fmt(P2.fajr-10)+'</b></div>'+
+  '<div class="fj-tip">💡 '+esc(pick(FJ_TIPS,7))+'</div>'+
+  '<button type="button" class="fj-tog'+(NF.fajrBoost!==false?' on':'')+'" data-fjtog="1"><span class="sw"><i></i></span><span><b>تكثيف تنبيهات الفجر</b><small>تفكير قبل الفجر بربع ساعة، وتنبيهين بعده لو لسه معلّمتش، وتفكير بالنوم بدري بالليل</small></span></button>';
+ $('#fjBody').innerHTML=h;}
+
+/* ---------- the panels ---------- */
+function buildPlans(){if($('#plans'))return;const df=$('#dayflow');if(!df)return;
+ const fj=el('section','pnl fajrc');fj.id='fajrC';fj.dataset.page='today';
+ fj.innerHTML='<div class="ph"><div class="glyph" style="color:var(--gold2);border-color:rgba(255,209,102,.4);background:rgba(255,209,102,.08)">🌅</div><div><h2>حملة الفجر</h2><span class="en">FAJR · كل يوم في وقتها</span></div><span class="cnt" id="fjCnt"></span></div><div id="fjBody"></div>';
+ df.insertAdjacentElement('afterend',fj);
+ fj.addEventListener('click',e=>{const b=e.target.closest('[data-fj]');if(b){fjMark(b.dataset.fj==='1');return;}
+  if(e.target.closest('[data-fjtog]')){NF.fajrBoost=NF.fajrBoost===false;saveNF();renderFajr();try{spkSchedule(true);}catch(x){}try{syncSoon();}catch(x){}toast('🌅',NF.fajrBoost?'تكثيف الفجر اشتغل':'تكثيف الفجر اتقفل',NF.fajrBoost?'هفكّرك قبلها وبعدها لحد ما تعلّم إنك صليت':'');}});
+ const sec=el('section','pnl plans');sec.id='plans';sec.dataset.page='today';
+ const opt=(a,v)=>a.map(x=>'<option value="'+x[0]+'"'+(x[0]==v?' selected':'')+'>'+x[1]+'</option>').join('');
+ const DUR=[[15,'15 دقيقة'],[30,'30 دقيقة'],[45,'45 دقيقة'],[60,'ساعة'],[90,'ساعة ونص'],[120,'ساعتين'],[180,'3 ساعات']];
+ sec.innerHTML='<div class="ph"><div class="glyph" style="color:var(--sky);border-color:rgba(76,201,240,.4);background:rgba(76,201,240,.08)">📌</div><div><h2>مهامي وأهدافي</h2><span class="en">PLAN · ضيف وأنا أرتّبهالك</span></div><span class="cnt" id="plCnt"></span></div>'+
+  '<div id="plChk"></div>'+
+  '<div class="rsub">TODAY · جدولك النهارده</div><div id="plToday"></div>'+
+  '<details class="pl-next"><summary>📅 الأيام الجاية</summary><div id="plNext"></div></details>'+
+  '<div class="rsub">GOALS & COURSES · أهدافك وكورساتك</div><div id="plGoals"></div>'+
+  '<div class="rsub">TASKS · كل مهامك</div><div id="plTasks"></div>'+
+  '<div class="pl-adds">'+
+  '<details class="svnew" id="plTaskNew"><summary class="minibtn gold" style="display:inline-block">+ مهمة</summary><div class="svform">'+
+   '<input id="plTT" maxlength="60" placeholder="عاوز تعمل إيه؟ (تخلّص تقرير، تكلّم حد، مشوار…)">'+
+   '<div class="mrow1"><label class="pl-l">هتاخد قد إيه<select id="plTD">'+opt(DUR,30)+'</select></label><label class="pl-l">الأهمية<select id="plTP">'+opt([[0,'عادي'],[1,'مهم ⭐'],[2,'عاجل 🔥']],0)+'</select></label></div>'+
+   '<div class="mrow1"><label class="pl-l">لحد إمتى؟ (اختياري)<input id="plTDue" type="date"></label><label class="pl-l">ميعاد ثابت؟ (اختياري)<input id="plTAt" type="time"></label></div>'+
+   '<button class="minibtn gold" id="plTAdd" type="button" style="width:100%;padding:9px">ضيفها وأنا أحطها في وقت فاضي</button></div></details>'+
+  '<details class="svnew" id="plGoalNew"><summary class="minibtn" style="display:inline-block">+ هدف / كورس</summary><div class="svform">'+
+   '<div class="pl-pre">'+PL_PRESETS.map((p,i)=>'<button type="button" class="minibtn" data-pre="'+i+'">'+p.ic+' '+p.t+'</button>').join('')+'</div>'+
+   '<div class="svic" id="plGIc">'+PL_GIC.map((x,i)=>'<button type="button" data-ic="'+x+'"'+(i?'':' class="on"')+'>'+x+'</button>').join('')+'</div>'+
+   '<input id="plGT" maxlength="40" placeholder="اسم الهدف أو الكورس (إسباني A1، كورس ماركتنج…)">'+
+   '<div class="pl-kind" id="plGK"><button type="button" data-k="course" class="on">📚 كورس فيه دروس</button><button type="button" data-k="habit">🔁 عادة / هدف</button></div>'+
+   '<div class="mrow1" id="plGCourse"><label class="pl-l">عدد الدروس كلها<input id="plGTot" type="number" inputmode="numeric" min="1" placeholder="مثلاً 60"></label><label class="pl-l">خلّصت منهم كام<input id="plGDone" type="number" inputmode="numeric" min="0" placeholder="0"></label></div>'+
+   '<div class="mrow1"><label class="pl-l">كام مرة في الأسبوع<select id="plGPer">'+opt([1,2,3,4,5,6,7].map(n=>[n,n===7?'كل يوم':n+' مرات']),3)+'</select></label><label class="pl-l">الجلسة قد إيه<select id="plGLen">'+opt([[10,'10 دقايق'],[15,'15 دقيقة'],[20,'20 دقيقة'],[30,'30 دقيقة'],[45,'45 دقيقة'],[60,'ساعة'],[90,'ساعة ونص']],30)+'</select></label></div>'+
+   '<div class="mrow1"><label class="pl-l">بتحب تذاكر إمتى<select id="plGPref">'+opt(Object.keys(PL_PREF).map(k=>[k,PL_PREF[k]]),'any')+'</select></label><label class="pl-l">ساعة معيّنة؟ (اختياري)<input id="plGTime" type="time"></label></div>'+
+   '<label class="pl-l">عاوز تخلّصه قبل (اختياري)<input id="plGBy" type="date"></label>'+
+   '<button class="minibtn gold" id="plGAdd" type="button" style="width:100%;padding:9px">ابدأ، وأنا هوزّع الجلسات على أسبوعك</button></div></details>'+
+  '<button type="button" class="minibtn" id="plRe">↻ رتّب تاني</button></div>'+
+  '<p class="note">التطبيق بيدوّر على الأوقات الفاضية في يومك (بعيد عن الصلاة والشغل والتمرين والأكل) ويحط فيها مهامك وجلسات كورساتك، وبيفكّرك بإشعار في ميعادها، وبعد كل جلسة يسألك عملتها ولا لأ. لو حاجة فاتت بينقلها لوحده لأقرب وقت فاضي.</p>';
+ fj.insertAdjacentElement('afterend',sec);
+ let gic='🎯',gk='course';
+ const setKind=k=>{gk=k;$('#plGK').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));$('#plGCourse').style.display=k==='course'?'':'none';};
+ const setIc=x=>{gic=x;$('#plGIc').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.ic===x));};
+ setIc('🇪🇸');
+ $('#plGK').addEventListener('click',e=>{const b=e.target.closest('[data-k]');if(b)setKind(b.dataset.k);});
+ $('#plGIc').addEventListener('click',e=>{const b=e.target.closest('[data-ic]');if(b)setIc(b.dataset.ic);});
+ sec.querySelector('.pl-pre').addEventListener('click',e=>{const b=e.target.closest('[data-pre]');if(!b)return;const p=PL_PRESETS[+b.dataset.pre];
+  $('#plGT').value=p.t;setIc(p.ic);setKind(p.kind);$('#plGTot').value=p.total||'';$('#plGPer').value=p.per;$('#plGLen').value=p.len;$('#plGPref').value=p.pref;});
+ $('#plTAdd').addEventListener('click',()=>{const t=$('#plTT').value.trim();if(!t){$('#plTT').focus();return;}
+  const x={id:uid(),t:t.slice(0,60),dur:+$('#plTD').value||30,pri:+$('#plTP').value||0,due:$('#plTDue').value||'',at:$('#plTAt').value||'',c:Date.now()};
+  PL.tasks.push(x);savePL();['#plTT','#plTDue','#plTAt'].forEach(s=>$(s).value='');$('#plTaskNew').open=false;plReplan(true);
+  const w=plWhere(x.id);toast(+x.pri===2?'🔥':'📌','اتضافت: '+x.t,w?'حطيتهالك '+plDayName(w.k)+' الساعة '+MOSPlan.fmt(w.it.min):'ملقتش وقت فاضي قريب. جرّب تقصّر المدة');});
+ $('#plTT').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#plTAdd').click();}});
+ $('#plGAdd').addEventListener('click',()=>{const t=$('#plGT').value.trim();if(!t){$('#plGT').focus();return;}
+  const tot=Math.round(+$('#plGTot').value||0);if(gk==='course'&&!(tot>0)){$('#plGTot').focus();return;}
+  const g={id:uid(),t:t.slice(0,40),ic:gic,kind:gk,total:gk==='course'?tot:0,done:gk==='course'?Math.min(tot,Math.max(0,Math.round(+$('#plGDone').value||0))):0,unit:'درس',
+   per:+$('#plGPer').value||3,len:+$('#plGLen').value||30,pref:$('#plGPref').value||'any',time:$('#plGTime').value||'',by:$('#plGBy').value||'',log:{},c:Date.now()};
+  if(/صفح|كتاب/.test(t))g.unit='صفحة';
+  PL.goals.push(g);savePL();['#plGT','#plGTot','#plGDone','#plGTime','#plGBy'].forEach(s=>$(s).value='');$('#plGoalNew').open=false;plReplan(true);
+  const w=plWhere(g.id);toast(g.ic,'بدأنا: '+g.t,g.per+' جلسات في الأسبوع'+(w?' · أول جلسة '+plDayName(w.k)+' '+MOSPlan.fmt(w.it.min):''));});
+ $('#plRe').addEventListener('click',()=>{plReplan(false);toast('↻','رتّبتلك أيامك من جديد','على حسب الأوقات الفاضية دلوقتي');});
+ sec.addEventListener('click',e=>{const T=e.target;let b;
+  if(b=T.closest('[data-tdone]')){const x=plTask(b.dataset.tdone);if(!x)return;x.done=todayKey();savePL();try{sparks(e.clientX,e.clientY,12,['#7cf29c','#4cc9f0']);}catch(q){}toast('✓','خلصت: '+x.t,'عاش يا بطل');plReplan(true);return;}
+  if(b=T.closest('[data-tundo]')){const x=plTask(b.dataset.tundo);if(x){delete x.done;savePL();plReplan(true);}return;}
+  if(b=T.closest('[data-tlater]')){const x=plTask(b.dataset.tlater);if(!x)return;x.nb=plDays(todayKey(),1);if(x.at&&(!x.due||x.due<=todayKey()))x.due=x.nb;savePL();plReplan(true);const w=plWhere(x.id);toast('⏭','أجّلتها',w?plDayName(w.k)+' '+MOSPlan.fmt(w.it.min):'');return;}
+  if(b=T.closest('[data-tdel]')){const x=plTask(b.dataset.tdel);if(x&&confirm('أمسح "'+x.t+'"؟')){PL.tasks=PL.tasks.filter(q=>q!==x);savePL();plReplan(true);}return;}
+  if(b=T.closest('[data-gyes]')){const [k,id]=b.dataset.gyes.split('|');const g=plGoal(id);plLog(id,k,g&&g.kind==='course'?(+b.dataset.u||1):0,b.dataset.m);return;}
+  if(b=T.closest('[data-gno]')){const [k,id]=b.dataset.gno.split('|');PL.skip[k+'|'+id]=1;PL.due=PL.due.filter(d=>!(d.d===k&&d.id===id));savePL();plReplan(true);
+   const w=plWhere(id);toast('🤍','ولا يهمك','حطيتلك جلسة تانية'+(w?' '+plDayName(w.k)+' '+MOSPlan.fmt(w.it.min):' أول ما يبقى فيه وقت'));return;}
+  if(b=T.closest('[data-glog]')){const g=plGoal(b.dataset.glog);if(g)plLog(g.id,todayKey(),g.kind==='course'?1:0,g.len);return;}
+  if(b=T.closest('[data-gpause]')){const g=plGoal(b.dataset.gpause);if(g){g.arch=!g.arch;savePL();plReplan(true);toast(g.ic,g.arch?'وقّفت '+g.t+' مؤقتاً':'رجّعت '+g.t,'');}return;}
+  if(b=T.closest('[data-gdel2]')){const g=plGoal(b.dataset.gdel2);if(g&&confirm('أمسح "'+g.t+'" وكل تقدّمك فيه؟')){PL.goals=PL.goals.filter(q=>q!==g);PL.due=PL.due.filter(d=>d.id!==g.id);savePL();plReplan(true);}return;}
+  if(b=T.closest('[data-gtot]')){const g=plGoal(b.dataset.gtot);if(!g)return;const v=prompt('خلّصت كام '+g.unit+' من '+g.total+' لحد دلوقتي؟',g.done||0);if(v==null)return;const n=Math.round(+v);if(n>=0){g.done=Math.min(+g.total,n);savePL();renderPlans();}return;}
+  if(b=T.closest('[data-pre-sp]')){$('#plGoalNew').open=true;sec.querySelector('[data-pre="0"]').click();$('#plGT').focus();return;}});
+ renderFajr();
+ const t=todayKey();if(!PL.sched||PL.sched.k!==t||Date.now()-(PL.at||0)>45*60e3)plReplan(false);else renderPlans();
+ document.addEventListener('visibilitychange',()=>{if(document.hidden)return;if(!PL.sched||PL.sched.k!==todayKey()||Date.now()-(PL.at||0)>45*60e3)plReplan(false);else{renderPlans();renderFajr();}});}
+
+function plItemRow(k,it,isToday,now){const g=it.g?plGoal(it.id):null,x=it.g?null:plTask(it.id);if(!g&&!x)return '';
+ const end=it.min+it.dur,st=isToday?(now>=it.min&&now<end?'now':end<=now?'past':''):'';
+ const name=g?g.t:x.t,ic=g?g.ic:(+x.pri===2?'🔥':+x.pri===1?'⭐':'📌');
+ const sub=g?(g.kind==='course'?'جلسة '+plDur(it.dur)+' · '+(g.done||0)+'/'+g.total+' '+g.unit:'جلسة '+plDur(it.dur)):plDur(it.dur)+(x.due?' · قبل '+plDayName(x.due):'')+(it.fix?' · ميعاد ثابت':'');
+ const act=g?(isToday?'<button type="button" class="pl-ok" data-gyes="'+k+'|'+g.id+'" data-u="1" data-m="'+it.dur+'" aria-label="عملتها">✓</button>':'')
+  :'<button type="button" class="pl-ok" data-tdone="'+x.id+'" aria-label="خلصت">✓</button>'+(isToday?'<button type="button" class="pl-sm" data-tlater="'+x.id+'" aria-label="أجّلها لبكرة">⏭</button>':'');
+ return '<div class="pl-it '+st+(g?' g':'')+'"><span class="pl-tm mono">'+MOSPlan.fmt(it.min)+'</span><span class="pl-ic">'+esc(ic)+'</span><span class="pl-tx"><b>'+esc(name)+'</b><small>'+(st==='now'?'<em>دلوقتي · لحد '+MOSPlan.fmt(end)+'</em> · ':'')+esc(sub)+'</small></span>'+act+'</div>';}
+function renderPlans(){const sec=$('#plans');if(!sec)return;if(!hasPlan()){$('#plToday').innerHTML='<div class="sub">مستني مواعيد يومك تتحمّل…</div>';return;}
+ const t=todayKey(),now=plMin();const D=(PL.sched&&PL.sched.days)||{};
+ /* check-ins */
+ const ch=plCheckins();
+ $('#plChk').innerHTML=ch.map(d=>{const g=plGoal(d.id);const cu=g.kind==='course';
+  return '<div class="pl-chk"><div class="pl-chq">'+esc(g.ic)+' <b>'+(d.d===t?'كان عندك':plDayName(d.d)+' كان عندك')+' '+esc(g.t)+' الساعة '+MOSPlan.fmt(d.min)+'. عملتها؟</b></div><div class="pl-cha">'+
+   (cu?[1,2,3].map(u=>'<button type="button" class="minibtn gold" data-gyes="'+d.d+'|'+d.id+'" data-u="'+u+'" data-m="'+d.dur+'">✓ '+(u===1?'خلّصت درس':u===2?'درسين':'3 دروس')+'</button>').join(''):'<button type="button" class="minibtn gold" data-gyes="'+d.d+'|'+d.id+'" data-m="'+d.dur+'">✓ أيوه عملتها</button>')+
+   '<button type="button" class="minibtn" data-gno="'+d.d+'|'+d.id+'">✗ لأ، حطّها في وقت تاني</button></div></div>';}).join('');
+ /* today */
+ const today=(D[t]||[]);const doneToday=PL.tasks.filter(x=>x.done===t);
+ const gDone=PL.goals.filter(g=>g.log&&g.log[t]);
+ let h=today.map(it=>plItemRow(t,it,true,now)).join('');
+ h+=gDone.map(g=>'<div class="pl-it done g"><span class="pl-tm mono">✓</span><span class="pl-ic">'+esc(g.ic)+'</span><span class="pl-tx"><b>'+esc(g.t)+'</b><small>اتسجّلت النهارده'+(g.kind==='course'&&g.log[t].u?' · +'+g.log[t].u+' '+g.unit:'')+'</small></span></div>').join('');
+ h+=doneToday.map(x=>'<div class="pl-it done"><span class="pl-tm mono">✓</span><span class="pl-ic">📌</span><span class="pl-tx"><b>'+esc(x.t)+'</b><small>خلصت</small></span><button type="button" class="pl-sm" data-tundo="'+x.id+'" aria-label="رجّعها">↩</button></div>').join('');
+ $('#plToday').innerHTML=h||'<div class="sub">'+(PL.tasks.length||PL.goals.length?'مفيش حاجة باقية النهارده. يومك فاضي ✨':'لسه مضفتش مهام ولا أهداف. ضيف أول واحدة من تحت وأنا هلاقيلها وقت.')+'</div>'+
+  (!PL.goals.length?'<button type="button" class="pl-sp" data-pre-sp="1"><span>🇪🇸</span><span><b>ضيف كورس الإسباني</b><small>أوزّعلك جلساته على الأسبوع وأتابع معاك خلّصت كام درس</small></span><em>‹</em></button>':'');
+ /* next days */
+ let nx='';for(let i=1;i<7;i++){const k=plDays(t,i);const L=D[k]||[];if(!L.length)continue;nx+='<div class="pl-day">'+plDayName(k)+'</div>'+L.map(it=>plItemRow(k,it,false,now)).join('');}
+ $('#plNext').innerHTML=nx||'<div class="sub">مفيش حاجة متجدولة الأيام الجاية.</div>';
+ /* goals */
+ $('#plGoals').innerHTML=PL.goals.length?PL.goals.map(g=>{const p=plPace(g),w=plWeek(g),per=+g.per||0;const cu=g.kind==='course'&&+g.total>0;const f=cu?Math.min(1,(+g.done||0)/g.total):Math.min(1,w/Math.max(1,per));
+  const nxt=plWhere(g.id);let dots='';for(let i=0;i<per;i++)dots+='<i class="'+(i<w?'on':'')+'"></i>';
+  return '<div class="pl-g'+(g.arch?' paused':'')+(plGoalDone(g)?' done':'')+'"><div class="pl-gh"><span class="pl-gi">'+esc(g.ic)+'</span><span class="pl-gt"><b>'+esc(g.t)+'</b><small>'+(cu?'<button type="button" class="pl-lnk" data-gtot="'+g.id+'">'+(g.done||0)+' من '+g.total+' '+g.unit+'</button> · ':'')+per+' مرات في الأسبوع · '+plDur(+g.len||30)+'</small></span><span class="pl-gp mono">'+Math.round(f*100)+'%</span></div>'+
+   '<div class="svbar"><i style="width:'+(f*100).toFixed(1)+'%"></i></div>'+
+   '<div class="pl-gw"><span class="pl-dots">'+dots+'</span><span class="pl-pace '+p.c+'">'+esc(p.s)+'</span></div>'+
+   '<div class="pl-gn">'+(g.arch?'⏸ متوقف مؤقتاً':nxt?'الجلسة الجاية: <b>'+plDayName(nxt.k)+' '+MOSPlan.fmt(nxt.it.min)+'</b>':plGoalDone(g)?'':'مفيش وقت فاضي الأسبوع ده')+'</div>'+
+   '<div class="pl-ga"><button type="button" class="minibtn" data-glog="'+g.id+'">+ ذاكرت دلوقتي</button><button type="button" class="minibtn" data-gpause="'+g.id+'">'+(g.arch?'▶ رجّعه':'⏸ وقّف')+'</button><button type="button" class="svx" data-gdel2="'+g.id+'" aria-label="امسح">✕</button></div></div>';}).join(''):'<div class="sub">مفيش أهداف لسه. ضيف كورس أو عادة عاوز تلتزم بيها.</div>';
+ /* tasks */
+ const open=PL.tasks.filter(x=>!x.done).sort((a,b)=>{const wa=plWhere(a.id),wb=plWhere(b.id);const ka=wa?wa.k+String(wa.it.min).padStart(5,'0'):'z',kb=wb?wb.k+String(wb.it.min).padStart(5,'0'):'z';return ka<kb?-1:ka>kb?1:0;});
+ $('#plTasks').innerHTML=open.length?open.map(x=>{const w=plWhere(x.id);const late=w&&x.due&&w.k>x.due;
+  return '<div class="pl-tk"><span class="pl-ic">'+(+x.pri===2?'🔥':+x.pri===1?'⭐':'📌')+'</span><span class="pl-tx"><b>'+esc(x.t)+'</b><small>'+(w?plDayName(w.k)+' '+MOSPlan.fmt(w.it.min)+' · ':'<span style="color:var(--ember)">مفيش وقت فاضي</span> · ')+plDur(x.dur)+(x.due?' · الديدلاين '+plDayName(x.due):'')+(late?' <span style="color:var(--ember)">⚠ بعد الديدلاين، فضّي وقت أو قصّر المدة</span>':'')+'</small></span><button type="button" class="pl-ok" data-tdone="'+x.id+'" aria-label="خلصت">✓</button><button type="button" class="svx" data-tdel="'+x.id+'" aria-label="امسح">✕</button></div>';}).join(''):'<div class="sub">مفيش مهام مفتوحة.</div>';
+ const left=today.length;$('#plCnt').textContent=(ch.length?'✅ '+ch.length+' · ':'')+left+' النهارده';}
+
+
+buildReport();buildHifz();buildMentor();buildCoach();buildMoney();buildSave();buildComm();buildLessons();buildTaskEditor();renderBackup();initLock();persistStorage();initStore();buildQuick();buildSimple();buildDayflow();try{buildPlans();}catch(e){console.warn('plans',e);}buildNotifs();setupPages();initGo();autoInit();booted=true;RB.firstRender=true;
 setSync('local');netChip();render();connect();
 setupFX();nextMoti();startMoti();RB.firstRender=false;
 window.MOS={PT,isRamadan,LK,LS,enableLock,bioAvailable,nfEnable,askLoc,grantStorage,NF,saveNF,S,saveSettings,applyLoc,CITIES,LOC,render,nfRender,spkSchedule,goPage,burst:(n)=>{try{burst(n);}catch(e){}}};

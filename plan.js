@@ -62,13 +62,17 @@ const M={
  friday:["جمعة مباركة · اقرا الكهف وصلّي على النبي ﷺ", "بكّر للجمعة واقرا سورة الكهف"],
  moti:["افتكر إنت بتعمل كل ده ليه. كمّل", "خطوة صغيرة النهارده بتفرق بكرة", "إنت أقوى من إحساسك دلوقتي"],
  dhikr:["أستغفر الله ×100", "سبحان الله وبحمده ×100", "لا حول ولا قوة إلا بالله", "صلّي على النبي ﷺ ×10", "سبحان الله · الحمد لله · الله أكبر"],
+ fj1:["الفجر بعد ربع ساعة. قوم اتوضّا دلوقتي قبل ما تكسل", "ربع ساعة على الفجر. افتح النور واغسل وشك", "قوم يا بطل، الفجر قرّب. ركعتين خير من الدنيا وما فيها"],
+ fj2:["لسه نايم؟ الفجر أذّن من 12 دقيقة. قوم دلوقتي", "قوم صلّي الفجر قبل الشروق. اللي فات فات، المهم دلوقتي", "مين صلى الصبح فهو في ذمة الله. قوم"],
+ fj3:["آخر تفكير: الفجر لسه في وقته. قوم صلّي وعلّم في التطبيق", "قبل الشروق. قوم صلّي واكسب يومك كله"],
+ fjn:["نام بدري علشان الفجر. حط المنبه بعيد عن السرير", "اتوضّا قبل ما تنام وانوِ تصحى للفجر", "اقفل الموبايل دلوقتي، الفجر بكرة مستنيك"],
  away:["وحشتنا! افتح التطبيق وعلّم يومك", "بقالك فترة مدخلتش. يلا نكمّل", "خطوة واحدة صغيرة النهارده تكفي"]
 };
-const CATS=[['prayer','🕌','الصلوات'],['wake','☀','الصحيان والنوم'],['azkar','📿','أذكار الصبح والمساء'],['body','💪','التمرين والفطار والنزول'],['focus','🎯','ركّز على هدفك'],['moti','⚡','التحفيز'],['story','📖','القصص والأحاديث'],['read','📚','القراية'],['review','◑','حساب آخر اليوم'],['dhikr','📿','استغفار وتسبيح'],['away','◌','لو غبت عن التطبيق']];
-const GO={fajr:'pray',prayer:'pray',wake:'day',azkar_m:'azkar_m',train:'day',walk:'day',breakfast:'day',leave:'day',focus:'goal',home:'moti',moti:'moti',azkar_e:'azkar_e',story:'story',read:'read',review:'review',wind:'gratitude',sleep:'day',friday:'day',dhikr:'dhikr',away:'day'};
-const TITLE={wake:'☀ صباح الخير',azkar_m:'📿 أذكار الصباح',train:'💪 وقت التمرين',walk:'🚶 حركة خفيفة',breakfast:'🍳 وقت الفطار',leave:'🚗 النزول للشغل',focus:'🎯 وقت التركيز',home:'🏠 رجعت البيت',moti:'✨ جرعة تحفيز',azkar_e:'📿 أذكار المساء',story:'📖 قصة النهارده',read:'📚 وقت القراية',review:'◑ راجع يومك',wind:'🌙 استعد للنوم',sleep:'😴 وقت النوم',friday:'🕌 الجمعة',dhikr:'📿 ذكر',away:'👋 وحشتنا'};
-const LBL={fajr:'الفجر',dhuhr:'الظهر',asr:'العصر',maghrib:'المغرب',isha:'العشاء',wake:'الصحيان',azkar_m:'أذكار الصباح',train:'التمرين',walk:'مشي خفيف',breakfast:'الفطار',leave:'النزول للشغل',work:'الشغل',focus:'ركّز',home:'الرجوع للبيت',moti:'تحفيز',azkar_e:'أذكار المساء',story:'قصة وحديث',read:'القراية',review:'الحساب',wind:'الاستعداد للنوم',sleep:'النوم',friday:'الجمعة',dhikr:'ذكر',away:'غياب'};
-const ICON={fajr:'🌅',dhuhr:'☀',asr:'🌤',maghrib:'🌇',isha:'🌙',wake:'⏰',azkar_m:'📿',train:'💪',walk:'🚶',breakfast:'🍳',leave:'🚗',work:'💼',focus:'🎯',home:'🏠',moti:'⚡',azkar_e:'📿',story:'📖',read:'📚',review:'◑',wind:'🌙',sleep:'😴',friday:'🕌',dhikr:'📿',away:'◌'};
+const CATS=[['prayer','🕌','الصلوات'],['wake','☀','الصحيان والنوم'],['azkar','📿','أذكار الصبح والمساء'],['body','💪','التمرين والفطار والنزول'],['focus','🎯','ركّز على هدفك'],['moti','⚡','التحفيز'],['story','📖','القصص والأحاديث'],['read','📚','القراية'],['review','◑','حساب آخر اليوم'],['dhikr','📿','استغفار وتسبيح'],['away','◌','لو غبت عن التطبيق'],['fajr','🌅','تكثيف الفجر'],['task','📌','مهامك وكورساتك']];
+const GO={fajr:'pray',prayer:'pray',wake:'day',azkar_m:'azkar_m',train:'day',walk:'day',breakfast:'day',leave:'day',focus:'goal',home:'moti',moti:'moti',azkar_e:'azkar_e',story:'story',read:'read',review:'review',wind:'gratitude',sleep:'day',friday:'day',dhikr:'dhikr',away:'day',fj1:'fajr',fj2:'fajr',fj3:'fajr',fjn:'fajr'};
+const TITLE={wake:'☀ صباح الخير',azkar_m:'📿 أذكار الصباح',train:'💪 وقت التمرين',walk:'🚶 حركة خفيفة',breakfast:'🍳 وقت الفطار',leave:'🚗 النزول للشغل',focus:'🎯 وقت التركيز',home:'🏠 رجعت البيت',moti:'✨ جرعة تحفيز',azkar_e:'📿 أذكار المساء',story:'📖 قصة النهارده',read:'📚 وقت القراية',review:'◑ راجع يومك',wind:'🌙 استعد للنوم',sleep:'😴 وقت النوم',friday:'🕌 الجمعة',dhikr:'📿 ذكر',away:'👋 وحشتنا',fj1:'🌅 الفجر قرّب',fj2:'🌅 قوم صلّي الفجر',fj3:'🌅 الفجر لسه في وقته',fjn:'🌙 نام بدري للفجر'};
+const LBL={fajr:'الفجر',dhuhr:'الظهر',asr:'العصر',maghrib:'المغرب',isha:'العشاء',wake:'الصحيان',azkar_m:'أذكار الصباح',train:'التمرين',walk:'مشي خفيف',breakfast:'الفطار',leave:'النزول للشغل',work:'الشغل',focus:'ركّز',home:'الرجوع للبيت',moti:'تحفيز',azkar_e:'أذكار المساء',story:'قصة وحديث',read:'القراية',review:'الحساب',wind:'الاستعداد للنوم',sleep:'النوم',friday:'الجمعة',dhikr:'ذكر',away:'غياب',fj1:'قبل الفجر',fj2:'تفكير الفجر',fj3:'تفكير الفجر',fjn:'نوم بدري للفجر'};
+const ICON={fajr:'🌅',dhuhr:'☀',asr:'🌤',maghrib:'🌇',isha:'🌙',wake:'⏰',azkar_m:'📿',train:'💪',walk:'🚶',breakfast:'🍳',leave:'🚗',work:'💼',focus:'🎯',home:'🏠',moti:'⚡',azkar_e:'📿',story:'📖',read:'📚',review:'◑',wind:'🌙',sleep:'😴',friday:'🕌',dhikr:'📿',away:'◌',fj1:'🌅',fj2:'🌅',fj3:'🌅',fjn:'🌙'};
 
 function dayNum(y,m,d){return Math.floor(Date.UTC(y,m-1,d)/864e5);}
 function rot(arr,y,m,d,salt){return arr[(dayNum(y,m,d)*3+(salt||0))%arr.length];}
@@ -104,6 +108,16 @@ function day(y,m,d,cfg){const c=Object.assign({},DEF,cfg||{});const off=c.off||{
  add(Math.min(sl-90,toMin('21:30')),'review','review');
  add(sl-30,'wind','wake');
  add(sl,'sleep','wake');
+ /* Fajr boost: a nudge before it, two after it (skipped once you mark it), and an early-sleep nudge the night before */
+ if(c.fajrBoost){const done=c.fajrDone===pkey(y,m,d);add(P.fajr-15,'fj1','fajr',{tl:false});
+   if(!done){add(P.fajr+12,'fj2','fajr',{tl:false});if(P.sunrise-P.fajr>45)add(P.fajr+30,'fj3','fajr',{tl:false});}
+   const nx=new Date(Date.UTC(y,m-1,d+1));const P2=prayers(nx.getUTCFullYear(),nx.getUTCMonth()+1,nx.getUTCDate(),c);
+   add(Math.min(sl-40,Math.max(P.isha+30,sl-75)),'fjn','fajr',{tl:false,body:'الفجر بكرة '+fmt(P2.fajr)+' · '+rot(M.fjn,y,m,d,salt++)});}
+ /* your own tasks / goal & course sessions, already placed by the app (cfg.tasks = {date:[{min,dur,t,ic,g}]}) */
+ const tk=c.tasks&&c.tasks[pkey(y,m,d)];
+ if(tk&&tk.forEach)tk.forEach(x=>{if(!isFinite(x.min))return;const dur=+x.dur||30;const t=String(x.t||'').slice(0,60);
+   L.push({min:Math.round(x.min),k:x.g?'goal':'task',cat:'task',title:(x.ic||(x.g?'🎯':'📌'))+' '+t,body:x.g?'جلسة '+dur+' دقيقة. ابدأ دلوقتي ولو بخطوة صغيرة':'وقت المهمة دي ('+dur+' دقيقة). خلّصها وعلّمها',go:'plans',label:t,icon:x.ic||(x.g?'🎯':'📌'),notify:true,end:Math.round(x.min)+dur});
+   if(x.g)L.push({min:Math.round(x.min)+dur+5,k:'chk',cat:'task',title:'✅ خلصت '+t+'؟',body:'علّمها في التطبيق علشان أتابع معاك وأعرف إنت ماشي إزاي',go:'plans',label:'تشيك: '+t,icon:'✅',notify:true,tl:false});});
  /* dhikr nudges: istighfar / tasbih, 3 times a day, away from other reminders */
  const free=mm=>{for(let i=0;i<6&&L.some(e=>Math.abs(e.min-mm)<15);i++)mm+=20;return mm;};
  [Math.max(wake+195,toMin('10:00')),P.dhuhr+110,P.maghrib+25].forEach(mm=>add(free(Math.round(mm/5)*5),'dhikr','dhikr'));
