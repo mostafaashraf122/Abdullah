@@ -3910,7 +3910,7 @@ function buildPlans(){if($('#plans'))return;const df=$('#dayflow');if(!df)return
   const g={id:uid(),t:t.slice(0,40),ic:gic,kind:gk,total:gk==='course'?tot:0,done:gk==='course'?Math.min(tot,Math.max(0,Math.round(+$('#plGDone').value||0))):0,unit:'درس',
    per:+$('#plGPer').value||3,len:+$('#plGLen').value||30,pref:$('#plGPref').value||'any',time:$('#plGTime').value||'',by:$('#plGBy').value||'',log:{},c:Date.now()};
   if(/صفح|كتاب/.test(t))g.unit='صفحة';
-  PL.goals.push(g);savePL();['#plGT','#plGTot','#plGDone','#plGTime','#plGBy'].forEach(s=>$(s).value='');$('#plGoalNew').open=false;plReplan(true);
+  PL.goals.push(g);savePL();try{trFromGoal(g);}catch(e){}['#plGT','#plGTot','#plGDone','#plGTime','#plGBy'].forEach(s=>$(s).value='');$('#plGoalNew').open=false;plReplan(true);
   const w=plWhere(g.id);toast(g.ic,'بدأنا: '+g.t,g.per+' جلسات في الأسبوع'+(w?' · أول جلسة '+plDayName(w.k)+' '+MOSPlan.fmt(w.it.min):''));});
  $('#plRe').addEventListener('click',()=>{plReplan(false);toast('↻','رتّبتلك أيامك من جديد','على حسب الأوقات الفاضية دلوقتي');});
  sec.addEventListener('click',e=>{const T=e.target;let b;
@@ -3923,7 +3923,7 @@ function buildPlans(){if($('#plans'))return;const df=$('#dayflow');if(!df)return
    const w=plWhere(id);toast('🤍','ولا يهمك','حطيتلك جلسة تانية'+(w?' '+plDayName(w.k)+' '+MOSPlan.fmt(w.it.min):' أول ما يبقى فيه وقت'));return;}
   if(b=T.closest('[data-glog]')){const g=plGoal(b.dataset.glog);if(g)plLog(g.id,todayKey(),g.kind==='course'?1:0,g.len);return;}
   if(b=T.closest('[data-gpause]')){const g=plGoal(b.dataset.gpause);if(g){g.arch=!g.arch;savePL();plReplan(true);toast(g.ic,g.arch?'وقّفت '+g.t+' مؤقتاً':'رجّعت '+g.t,'');}return;}
-  if(b=T.closest('[data-gdel2]')){const g=plGoal(b.dataset.gdel2);if(g&&confirm('أمسح "'+g.t+'" وكل تقدّمك فيه؟')){PL.goals=PL.goals.filter(q=>q!==g);PL.due=PL.due.filter(d=>d.id!==g.id);savePL();plReplan(true);}return;}
+  if(b=T.closest('[data-gdel2]')){const g=plGoal(b.dataset.gdel2);if(g&&confirm('أمسح "'+g.t+'" وكل تقدّمك فيه؟')){PL.goals=PL.goals.filter(q=>q!==g);PL.due=PL.due.filter(d=>d.id!==g.id);savePL();if(g.track&&typeof TR!=='undefined'){TR.tracks=TR.tracks.filter(t=>t.id!==g.track);saveTR();}plReplan(true);}return;}
   if(b=T.closest('[data-gtot]')){const g=plGoal(b.dataset.gtot);if(!g)return;const v=prompt('خلّصت كام '+g.unit+' من '+g.total+' لحد دلوقتي؟',g.done||0);if(v==null)return;const n=Math.round(+v);if(n>=0){g.done=Math.min(+g.total,n);savePL();renderPlans();}return;}
   if(b=T.closest('[data-pre-sp]')){$('#plGoalNew').open=true;sec.querySelector('[data-pre="0"]').click();$('#plGT').focus();return;}});
  renderFajr();
@@ -4083,7 +4083,7 @@ function trSpark(t){const L=Object.keys(t.m.log||{}).sort().slice(-20).map(k=>+t
 
 /* ---------- the panel ---------- */
 let TRD=null;/* the track being drafted in the add form */
-function buildTracks(){if($('#tracks'))return;const after=$('#plans')||$('#fajrC')||$('#dayflow');if(!after)return;
+function buildTracks(){if($('#tracks'))return;try{PL.goals.forEach(g=>{if(!g.track||!trTrack(g.track))trFromGoal(g);});}catch(e){console.warn('tr-mig',e);}const after=$('#plans')||$('#fajrC')||$('#dayflow');if(!after)return;
  const sec=el('section','pnl tracks');sec.id='tracks';sec.dataset.page='today';
  const opt=(a,v)=>a.map(x=>'<option value="'+x[0]+'"'+(x[0]==v?' selected':'')+'>'+x[1]+'</option>').join('');
  sec.innerHTML='<div class="ph"><div class="glyph" style="color:var(--mint);border-color:rgba(124,242,156,.4);background:rgba(124,242,156,.08)">🧭</div><div><h2>تراكاتي</h2><span class="en">TRACKS · قول عاوز توصل لإيه وأنا أعملّك تراك</span></div><span class="cnt" id="trCnt"></span></div>'+
@@ -4110,7 +4110,8 @@ function buildTracks(){if($('#tracks'))return;const after=$('#plans')||$('#fajrC
   if(b=T.closest('[data-trdel-s]')){const [tid,sid]=b.dataset.trdelS.split('|');const t=trTrack(tid);if(!t)return;t.st.forEach(s=>s.s=s.s.filter(x=>x.id!==sid));saveTR();renderTracks();return;}
   if(b=T.closest('[data-tradd]')){const [tid,si]=b.dataset.tradd.split('|');const inp=b.previousElementSibling;const v=(inp&&inp.value||'').trim();if(!v){inp&&inp.focus();return;}const t=trTrack(tid);if(!t)return;t.st[+si].s.push({id:uid(),t:v.slice(0,80),d:''});saveTR();trOpen[tid]=1;renderTracks();toast('➕','ضفت خطوة','في مرحلة '+t.st[+si].n);return;}
   if(b=T.closest('[data-trlog]')){const t=trTrack(b.dataset.trlog);if(!t||!t.m)return;const inp=b.previousElementSibling;const v=parseFloat(trN(inp&&inp.value));if(!isFinite(v)){inp&&inp.focus();return;}
-   t.m.log=t.m.log||{};t.m.log[todayKey()]=v;if(t.m.s==='')t.m.s=v;trBump(t);saveTR();renderTracks();const p=trMpct(t);
+   if(t.ty==='course'&&t.gid&&plGoal(t.gid)){const g=plGoal(t.gid);const was=+g.done||0;g.done=Math.max(0,Math.min(+g.total||v,Math.round(v)));if(g.done>was){g.log=g.log||{};const o=g.log[todayKey()];g.log[todayKey()]={m:(o?o.m:0)+(+g.len||30),u:(o?(+o.u||0):0)+(g.done-was)};}savePL();trSyncCourse(t,g);plReplan(true);toast(t.ic,'بقيت '+g.done+' من '+g.total+' '+g.unit,'');return;}
+   t.m.log=t.m.log||{};t.m.log[todayKey()]=v;if(t.m.s==='')t.m.s=v;if(t.m.tg===''&&t.m.delta)t.m.tg=Math.round((v+t.m.delta)*10)/10;trBump(t);saveTR();renderTracks();const p=trMpct(t);
    if(p!=null&&p>=1){try{burst(160);}catch(x){}toast('🏆','وصلت لهدفك في '+t.t+'!',v+' '+t.m.u);}else toast(t.ic,'سجّلت: '+v+' '+t.m.u,p!=null?'وصلت '+Math.round(p*100)+'% من الهدف':'');return;}
   if(b=T.closest('[data-trpause]')){const t=trTrack(b.dataset.trpause);if(!t)return;t.arch=!t.arch;const g=t.gid&&plGoal(t.gid);if(g)g.arch=t.arch;saveTR();savePL();plReplan(true);toast(t.ic,t.arch?'وقّفت التراك مؤقتاً':'رجّعت التراك',t.t);return;}
   if(b=T.closest('[data-trdel]')){const t=trTrack(b.dataset.trdel);if(!t||!confirm('أمسح تراك "'+t.t+'" وكل تقدّمك فيه؟'))return;TR.tracks=TR.tracks.filter(x=>x!==t);if(t.gid){PL.goals=PL.goals.filter(g=>g.id!==t.gid);PL.due=PL.due.filter(d=>d.id!==t.gid);savePL();}saveTR();plReplan(true);renderTracks();return;}
@@ -4121,6 +4122,64 @@ function buildTracks(){if($('#tracks'))return;const after=$('#plans')||$('#fajrC
   if(b=T.closest('[data-tropen]')){const id=b.dataset.tropen;trOpen[id]=!trOpen[id];renderTracks();return;}});
  renderTracks();}
 const trOpen={};
+/* ---------- ضيف أي حاجة: he writes anything, the app decides where it belongs (task / course / goal) and turns goals & courses into a track automatically ---------- */
+const SM_TASK=/^(\s*(لازم|محتاج|عاوز|عايز)\s+)?(ا|ان ا)?(كلم|تصل|شتري|دفع|بعت|حجز|روح|سلم|قابل|جيب|غسل|نضف|رتب|جهز|صلح|راجع ال|خلص ال|كتب ايميل|رد علي)|مشوار|ميعاد|معاد|اجتماع|ميتنج|فاتوره|دكتور|بنك|تقرير|ايميل|مكالمه/;
+const SM_WHEN=/النهارده|انهارده|بكره|بكرا|بعد بكره|الساعه|الصبح|بالليل|السبت|الاحد|الحد|الاتنين|التلات|الاربع|الخميس|الجمعه الجايه/;
+const SM_GOAL=/اتعلم|احترف|اوصل|هدف|عاده|كل يوم|يوميا|في الشهر|في السنه|السنه دي|اتقن|ابقي|ابني|احسن من/;
+function smKind(txt){const n=trNorm(txt);
+ if(/كورس|كورسات|دوره|دبلومه|يوديمي|udemy|coursera/.test(n))return 'course';
+ if(SM_WHEN.test(n)&&!SM_GOAL.test(n))return 'task';
+ if(SM_TASK.test(n)&&!SM_GOAL.test(n))return 'task';
+ if(trDetect(txt)!=='gen'||SM_GOAL.test(n))return 'track';
+ return n.split(/\s+/).length<=5?'task':'track';}
+function smTask(txt){const n=trNorm(txt),t0=todayKey();let due='',at='',dur=30,pri=0;
+ if(/بعد بكره|بعد بكرا/.test(n))due=plDays(t0,2);else if(/بكره|بكرا/.test(n))due=plDays(t0,1);else if(/النهارده|انهارده/.test(n))due=t0;
+ else{const D=[['الاحد',0],['الحد',0],['الاتنين',1],['التلات',2],['الاربع',3],['الخميس',4],['الجمعه',5],['السبت',6]];const f=D.find(d=>new RegExp('(^|\\s)(يوم\\s+)?'+d[0]).test(n));
+  if(f){const cur=parseKey(t0).getDay();due=plDays(t0,((f[1]-cur+7)%7)||7);}}
+ const tm=/الساعه\s*(\d{1,2})(?:[:.](\d{2}))?\s*(الصبح|صباحا|ص|الضهر|العصر|المغرب|بالليل|مساء|م)?/.exec(n);
+ if(tm){let h=+tm[1]%24;const mm=+(tm[2]||0),z=tm[3]||'';if(/بالليل|مساء|^م$|العصر|المغرب/.test(z)&&h<12)h+=12;else if(!z&&h>=1&&h<=7)h+=12;at=pad(h)+':'+pad(mm);if(!due)due=t0;}
+ const dm=/(\d+)\s*(دقيقه|دقايق|د\b)/.exec(n);if(dm)dur=Math.max(5,Math.min(240,+dm[1]));else if(/ساعتين/.test(n))dur=120;else if(/ساعه ونص/.test(n))dur=90;else if(/\bساعه\b/.test(n)&&!tm)dur=60;
+ if(/عاجل|ضروري|مستعجل|حالا|فورا/.test(n))pri=2;else if(/مهم/.test(n))pri=1;
+ const x={id:uid(),t:txt.trim().slice(0,60),dur,pri,due,at,c:Date.now()};PL.tasks.push(x);savePL();plReplan(true);
+ const w=plWhere(x.id);return {ic:pri===2?'🔥':'📌',title:'اتضافت لمهامك: '+x.t,sub:w?'حطيتها '+plDayName(w.k)+' الساعة '+MOSPlan.fmt(w.it.min):'ملقتش وقت فاضي قريب، هتلاقيها في قايمة المهام',go:'#plTasks'};}
+/* a course: a goal with lessons + a track whose steps are the lessons in chunks (ticked by themselves as he logs lessons) */
+function smCourse(txt){const n=trNorm(txt);const L=/(\d+)\s*(درس|دروس|فيديو|فيديوهات|محاضره|محاضرات|حلقه|حلقات|موديول|جزء)/.exec(n);const dn=/(خلصت|خالص|عديت)\s*(\d+)/.exec(n);
+ const tot=L?+L[1]:20;const cl=trTopic(trN(txt).replace(/(خلصت|خالص|عديت)\s*\d+\s*\S*/g,'').replace(/\d+\s*(درس|دروس|فيديو|فيديوهات|محاضرة|محاضره|محاضرات|حلقة|حلقه|حلقات|موديول|جزء)/g,'').replace(/\s+/g,' ').trim());const g={id:uid(),t:cl.slice(0,40)||'كورس',ic:'🎓',kind:'course',total:tot,done:dn?Math.min(tot,+dn[2]):0,unit:'درس',per:3,len:45,pref:'evening',time:'',by:'',log:{},c:Date.now()};
+ const ty=trDetect(txt);if(ty==='lang'){g.ic='🗣';}else if(ty==='code')g.ic='💻';else if(ty==='skill')g.ic='🎨';
+ PL.goals.push(g);savePL();const t=trFromGoal(g);plReplan(true);const w=plWhere(g.id);
+ return {ic:g.ic,title:'عملتلك تراك للكورس: '+g.t,sub:t.st.length+' مراحل · '+tot+' درس'+(L?'':' (غيّر العدد من «أهدافك وكورساتك»)')+(w?' · أول جلسة '+plDayName(w.k)+' '+MOSPlan.fmt(w.it.min):''),go:'#tracks'};}
+function trCourseStages(g){const tot=Math.max(1,+g.total||1),ch=tot<=10?1:tot<=40?5:10,steps=[];
+ for(let a=1;a<=tot;a+=ch){const b=Math.min(tot,a+ch-1);steps.push({id:uid(),t:a===b?'الدرس '+a:'الدروس '+a+'–'+b,d:'',u:b});}
+ const k=steps.length<=4?1:steps.length<=8?2:steps.length<=15?3:4,per=Math.ceil(steps.length/k),names=['البداية','نص الطريق','الجزء التالت','الأخير'],st=[];
+ for(let i=0;i<k;i++)st.push({n:k===1?'الدروس':i===k-1?'الأخير':names[i],s:steps.slice(i*per,(i+1)*per)});
+ st[st.length-1].s.push({id:uid(),t:'طبّق اللي اتعلمته في حاجة صغيرة بإيدك',d:''},{id:uid(),t:'خلّصت الكورس 🏆',d:''});return st.filter(s=>s.s.length);}
+/* every goal/course gets its own track (linked, so sessions & check-ins move the track too) */
+function trFromGoal(g){if(g.track&&trTrack(g.track))return trTrack(g.track);const cu=g.kind==='course'&&+g.total>0;const ty=cu?'course':trDetect(g.t);
+ const t={id:uid(),t:g.t,desc:g.t,ty:cu?'course':ty,ic:g.ic||(TR_T[ty]||TR_T.gen).ic,c:todayKey(),by:g.by||'',st:cu?trCourseStages(g):trBuildStages(ty,g.t),
+  m:cu?{u:g.unit||'درس',s:0,tg:+g.total,log:{}}:trMetric(ty,g.t),act:{},gid:g.id};
+ if(t.m&&(t.m.tg===''||t.m.tg==null)&&!t.m.delta)t.m=null;if(t.m){t.m.log=t.m.log||{};}
+ g.track=t.id;TR.tracks.unshift(t);if(cu)trSyncCourse(t,g,true);saveTR();savePL();return t;}
+function trSyncCourse(t,g,quiet){if(!t||!g||g.kind!=='course')return;const d=+g.done||0;let ch=false;
+ if(t.m){if(+t.m.tg!==+g.total){t.m.tg=+g.total;ch=true;}const v=trMval(t);if(v!==d){t.m.log[todayKey()]=d;ch=true;}}
+ trSteps(t).forEach(x=>{if(x.u!=null){const on=x.u<=d;if(on&&!x.d){x.d=todayKey();ch=true;}else if(!on&&x.d){x.d='';ch=true;}}});
+ if(ch&&!quiet)saveTR();return ch;}
+function trSyncAll(){let ch=false;TR.tracks.forEach(t=>{if(t.ty!=='course'||!t.gid)return;const g=plGoal(t.gid);if(g&&trSyncCourse(t,g,true))ch=true;});if(ch)saveTR();}
+function smAdd(){const inp=$('#smTxt');const txt=(inp.value||'').trim();if(!txt){inp.focus();return;}const k=smKind(txt);let r;
+ if(k==='task')r=smTask(txt);else if(k==='course')r=smCourse(txt);
+ else{const ty=trDetect(txt);const t={id:uid(),t:trTopic(txt).slice(0,40),desc:txt.slice(0,160),ty,ic:TR_T[ty].ic,c:todayKey(),by:'',st:trBuildStages(ty,txt),m:trMetric(ty,txt),act:{},gid:''};
+  if(t.m&&(t.m.tg===''||t.m.tg==null)&&!t.m.delta)t.m=null;if(t.m){t.m.log={};if(t.m.s!=='')t.m.log[todayKey()]=t.m.s;}
+  TR.tracks.unshift(t);trAddGoal(t,TR_T[ty].per,TR_T[ty].len,TR_T[ty].pref);saveTR();plReplan(true);const w=t.gid&&plWhere(t.gid);
+  r={ic:t.ic,title:'عملتلك تراك: '+t.t,sub:TR_T[ty].n+' · '+t.st.length+' مراحل · '+trSteps(t).length+' خطوة'+(w?' · أول جلسة '+plDayName(w.k)+' '+MOSPlan.fmt(w.it.min):''),go:'#tracks'};}
+ inp.value='';$('#smHint').textContent='';try{renderTracks();}catch(e){}toast(r.ic,r.title,r.sub);setTimeout(()=>{try{jump(r.go);flash($(r.go));}catch(e){}},350);}
+const SM_LBL={task:'📌 هتتضاف كمهمة وأحطها في وقت فاضي',course:'🎓 كورس · هعمله تراك بالدروس وأوزّع الجلسات',track:'🧭 هدف · هعمله تراك بمراحل وخطوات'};
+function buildSmart(){if($('#smart'))return;const box=$('#plChk');if(!box)return;
+ const w=el('div','sm-box');w.id='smart';
+ w.innerHTML='<div class="sm-row"><input id="smTxt" maxlength="160" placeholder="ضيف أي حاجة… (أكلّم البنك بكرة الساعة 11 · كورس فوتوشوب 30 درس · أخس 8 كيلو)" enterkeyhint="done"><button type="button" class="minibtn gold" id="smGo">ضيف</button></div><div class="sm-hint" id="smHint"></div>';
+ box.insertAdjacentElement('beforebegin',w);
+ $('#smGo').addEventListener('click',smAdd);
+ $('#smTxt').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();smAdd();}});
+ $('#smTxt').addEventListener('input',e=>{const v=e.target.value.trim();$('#smHint').textContent=v.length>2?SM_LBL[smKind(v)]:'';});}
+
 function trPrev(){const box=$('#trPrev');if(!box||!TRD)return;const D=TRD,opt=(a,v)=>a.map(x=>'<option value="'+x[0]+'"'+(x[0]==v?' selected':'')+'>'+x[1]+'</option>').join('');const m=D.m||{u:'',s:'',tg:''};
  box.innerHTML='<div class="tr-prev"><div class="tr-ph">'+esc(D.ic)+' فهمت إنه <b>'+esc(TR_T[D.ty].n)+'</b> · ده التراك بتاعك</div>'+
   '<input id="trT" maxlength="40" value="'+esc(D.t)+'" placeholder="اسم التراك">'+
@@ -4145,6 +4204,9 @@ function trCreate(){if(!TRD)return;const D=TRD;const title=($('#trT').value||'')
  toast(t.ic,'بدأنا تراك: '+t.t,t.st.length+' مراحل · '+trSteps(t).length+' خطوة'+(w?' · أول جلسة '+plDayName(w.k)+' '+MOSPlan.fmt(w.it.min):''));
  setTimeout(()=>{try{jump('#tracks');}catch(e){}},300);}
 function trToggle(tid,sid,e){const t=trTrack(tid);if(!t)return;let st=null,si=-1;t.st.forEach((s,i)=>{const x=s.s.find(q=>q.id===sid);if(x){st=x;si=i;}});if(!st)return;
+ if(st.u!=null){const g=plGoal(t.gid);if(g){const us=trSteps(t).filter(q=>q.u!=null);const prev=us.indexOf(st)>0?us[us.indexOf(st)-1].u:0;const was=+g.done||0;g.done=st.d?Math.min(was,prev):Math.max(was,st.u);
+  if(g.done>was){g.log=g.log||{};const k=todayKey(),o=g.log[k];g.log[k]={m:(o?o.m:0)+(+g.len||30),u:(o?(+o.u||0):0)+(g.done-was)};trBump(t);}savePL();trSyncCourse(t,g);saveTR();
+  if(!st.d)toast('↩','رجّعت التقدّم لـ'+g.done+' '+g.unit,'');else toast('✓','عاش! '+st.t,g.done+' من '+g.total+' '+g.unit);plReplan(true);return;}}
  if(st.d){st.d='';saveTR();renderTracks();return;}
  st.d=todayKey();trBump(t);saveTR();try{sparks(e.clientX,e.clientY,14,['#7cf29c','#ffd166','#4cc9f0']);}catch(x){}
  const stg=t.st[si],nx=trCur(t);
@@ -4153,7 +4215,7 @@ function trToggle(tid,sid,e){const t=trTrack(tid);if(!t)return;let st=null,si=-1
  else toast('✓','عاش! '+st.t,nx?'الجاي: '+nx.s.t:'');
  renderTracks();}
 
-function renderTracks(){const sec=$('#tracks');if(!sec)return;const t0=todayKey(),ws=weekStartKey(t0);const L=TR.tracks;
+function renderTracks(){const sec=$('#tracks');if(!sec)return;try{trSyncAll();}catch(e){}const t0=todayKey(),ws=weekStartKey(t0);const L=TR.tracks;
  const act=L.filter(t=>!t.arch&&!trIsDone(t));
  $('#trCnt').textContent=L.length?act.length+' شغّال':'';
  /* the dashboard: the big picture across all tracks */
@@ -4172,13 +4234,13 @@ function renderTracks(){const sec=$('#tracks');if(!sec)return;const t0=todayKey(
   let ses='';if(g){const w=plWeek(g),per=+g.per||0;let dots='';for(let i=0;i<per;i++)dots+='<i class="'+(i<w?'on':'')+'"></i>';const nx=plWhere(g.id);
    ses='<div class="tr-row"><span class="pl-dots">'+dots+'</span><span>جلسات الأسبوع '+w+'/'+per+'</span>'+(nx&&!t.arch?'<span class="tr-nx">الجاية '+plDayName(nx.k)+' '+MOSPlan.fmt(nx.it.min)+'</span>':'')+'</div>';}
   else if(!done&&!t.arch)ses='<div class="tr-row"><button type="button" class="pl-lnk" data-trsess="'+t.id+'">⏰ حطّلي جلسات للتراك ده في أسبوعي</button></div>';
-  let met='';if(t.m){const v=trMval(t);met='<div class="tr-met"><div class="tr-mh"><span>📈 <b class="mono">'+(v==null?'—':v)+'</b> '+esc(t.m.u)+(t.m.tg!==''?' <small>· الهدف '+t.m.tg+' '+esc(t.m.u)+'</small>':'')+'</span>'+(mp!=null?'<b class="mono" style="color:var(--mint)">'+Math.round(mp*100)+'%</b>':'')+'</div>'+trSpark(t)+
+  let met='';if(t.m){const v=trMval(t);met='<div class="tr-met"><div class="tr-mh"><span>📈 <b class="mono">'+(v==null?'—':v)+'</b> '+esc(t.m.u)+(t.m.tg!==''?' <small>· الهدف '+t.m.tg+' '+esc(t.m.u)+'</small>':t.m.delta?' <small>· سجّل وزنك وأنا أحسب الهدف ('+(t.m.delta<0?'-':'+')+Math.abs(t.m.delta)+')</small>':'')+'</span>'+(mp!=null?'<b class="mono" style="color:var(--mint)">'+Math.round(mp*100)+'%</b>':'')+'</div>'+trSpark(t)+
    (done||t.arch?'':'<div class="svact"><input type="number" inputmode="decimal" step="any" placeholder="رقمك النهارده"><button type="button" class="minibtn" data-trlog="'+t.id+'">سجّل</button></div>')+'</div>';}
   let h14='';for(let i=13;i>=0;i--){const k=plDays(t0,-i);h14+='<i class="'+(trActive(t,k)?'l1':'')+(k===t0?' now':'')+'"></i>';}
   const stages=trOpen[t.id]?'<div class="tr-all">'+t.st.map((s,i)=>'<div class="tr-stg"><div class="pl-day">المرحلة '+(i+1)+' · '+esc(s.n)+' <small>'+s.s.filter(x=>x.d).length+'/'+s.s.length+'</small></div>'+
     s.s.map(x=>'<div class="tr-st'+(x.d?' ok':'')+'"><button type="button" class="tr-cb" data-trstep="'+t.id+'|'+x.id+'" aria-label="'+(x.d?'رجّعها':'خلصتها')+'">'+(x.d?'✓':'')+'</button><span>'+esc(x.t)+(x.d?'<small>'+plDayName(x.d)+'</small>':'')+'</span><button type="button" class="svx" data-trdel-s="'+t.id+'|'+x.id+'" aria-label="امسح الخطوة">✕</button></div>').join('')+
     '<div class="svact tr-addst"><input maxlength="80" placeholder="ضيف خطوة في المرحلة دي"><button type="button" class="minibtn" data-tradd="'+t.id+'|'+i+'">+</button></div></div>').join('')+'</div>':'';
-  return '<div class="tr-card'+(t.arch?' paused':'')+(done?' done':'')+'"><div class="tr-h"><span class="tr-ic">'+esc(t.ic)+'</span><span class="tr-tt"><b>'+esc(t.t)+'</b><small>'+esc((TR_T[t.ty]||TR_T.gen).n)+' · بدأت '+plDayName(t.c)+(t.by?' · <button type="button" class="pl-lnk" data-trby="'+t.id+'">قبل '+plDayName(t.by)+'</button>':' · <button type="button" class="pl-lnk" data-trby="'+t.id+'">+ ميعاد</button>')+'</small></span>'+
+  return '<div class="tr-card'+(t.arch?' paused':'')+(done?' done':'')+'"><div class="tr-h"><span class="tr-ic">'+esc(t.ic)+'</span><span class="tr-tt"><b>'+esc(t.t)+'</b><small>'+esc(t.ty==='course'?'كورس':(TR_T[t.ty]||TR_T.gen).n)+' · بدأت '+plDayName(t.c)+(t.by?' · <button type="button" class="pl-lnk" data-trby="'+t.id+'">قبل '+plDayName(t.by)+'</button>':' · <button type="button" class="pl-lnk" data-trby="'+t.id+'">+ ميعاد</button>')+'</small></span>'+
    '<span class="tr-rg">'+trRing(p,58)+'<b class="mono">'+Math.round(p*100)+'%</b></span></div>'+path+
    '<div class="tr-row"><span>👣 '+nd+' من '+all.length+' خطوة'+(t.m&&mp!=null?' · '+Math.round(sp*100)+'%':'')+'</span><span class="tr-hm sm">'+h14+'</span></div>'+
    (done?'<div class="tr-here done">🏆 وصلت لآخر التراك</div>':t.arch?'<div class="tr-here">⏸ متوقف مؤقتاً</div>':cur?'<div class="tr-here"><small>إنت هنا: المرحلة '+(cur.i+1)+' · '+esc(t.st[cur.i].n)+'</small><div class="tr-next"><button type="button" class="tr-cb" data-trstep="'+t.id+'|'+cur.s.id+'" aria-label="خلصتها"></button><b>'+esc(cur.s.t)+'</b></div></div>':'')+
@@ -4186,7 +4248,7 @@ function renderTracks(){const sec=$('#tracks');if(!sec)return;const t0=todayKey(
    '<div class="pl-ga"><button type="button" class="minibtn" data-tropen="'+t.id+'">'+(trOpen[t.id]?'▴ اقفل الخطوات':'▾ كل الخطوات')+'</button><button type="button" class="minibtn" data-trpause="'+t.id+'">'+(t.arch?'▶':'⏸')+'</button><button type="button" class="minibtn" data-trren="'+t.id+'" aria-label="غيّر الاسم">✏</button><button type="button" class="svx" data-trdel="'+t.id+'" aria-label="امسح التراك">✕</button></div></div>';}).join('');}
 
 
-buildReport();buildHifz();buildMentor();buildCoach();buildMoney();buildSave();buildComm();buildLessons();buildTaskEditor();renderBackup();initLock();persistStorage();initStore();buildQuick();buildSimple();buildDayflow();try{buildPlans();}catch(e){console.warn('plans',e);}try{buildTracks();}catch(e){console.warn('tracks',e);}buildNotifs();setupPages();initGo();autoInit();booted=true;RB.firstRender=true;
+buildReport();buildHifz();buildMentor();buildCoach();buildMoney();buildSave();buildComm();buildLessons();buildTaskEditor();renderBackup();initLock();persistStorage();initStore();buildQuick();buildSimple();buildDayflow();try{buildPlans();}catch(e){console.warn('plans',e);}try{buildTracks();}catch(e){console.warn('tracks',e);}try{buildSmart();}catch(e){console.warn('smart',e);}buildNotifs();setupPages();initGo();autoInit();booted=true;RB.firstRender=true;
 setSync('local');netChip();render();connect();
 setupFX();nextMoti();startMoti();RB.firstRender=false;
 window.MOS={PT,isRamadan,LK,LS,enableLock,bioAvailable,nfEnable,askLoc,grantStorage,NF,saveNF,S,saveSettings,applyLoc,CITIES,LOC,render,nfRender,spkSchedule,goPage,burst:(n)=>{try{burst(n);}catch(e){}}};
@@ -4562,6 +4624,12 @@ body::before{opacity:.05!important}
  background:linear-gradient(90deg,#ffd166,#ff9a62 50%,#ff6fd8);box-shadow:0 10px 26px rgba(255,111,216,.35)}
 </style>
 
+<style id="smartcss">
+.sm-box{margin-bottom:12px;padding:10px;border-radius:14px;border:1px solid rgba(255,209,102,.35);background:linear-gradient(90deg,rgba(255,209,102,.08),rgba(124,242,156,.05))}
+.sm-row{display:flex;gap:6px}.sm-row input{flex:1;min-width:0;background:rgba(7,11,20,.6);border:1px solid var(--line2);border-radius:10px;color:var(--text);padding:10px;font:inherit;font-size:14.5px}
+.sm-row .minibtn{flex:none;padding:0 16px}
+.sm-hint{font-size:12.5px;color:var(--gold2);margin-top:6px}.sm-hint:empty{display:none}
+</style>
 <style id="trackcss">
 .tracks{border-color:rgba(124,242,156,.28)}
 .tracks textarea{width:100%;min-width:0;resize:vertical;background:rgba(7,11,20,.6);border:1px solid var(--line2);border-radius:10px;color:var(--text);padding:9px 10px;font:inherit;font-size:14.5px;line-height:1.6}
