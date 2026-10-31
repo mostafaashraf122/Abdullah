@@ -2972,7 +2972,7 @@ const PAGES=[['today','☀','اليوم'],['soul','☾','الروح'],['money','
 const PG_SUB={soul:'أدعية، أذكار، حفظ، وقصص',money:'ميزانيتك ومصاريفك وتحويشك · على موبايلك بس',coach:'دروس اليوم، المرشد، والتقارير',more:'الإعدادات، الأمان، ومهامك'};
 const TASK_PANELS=['m-rooh','m-jasad','m-nafs','m-bayt','m-waqt','m-ilm','m-career','m-dakhl','m-week'];
 function pageOf(p){const id=p.id||'';
- if(p.classList.contains('core')||id==='simple'||id==='dayflow'||id==='plans'||id==='fajrC'||p.querySelector('#signal'))return 'today';
+ if(p.classList.contains('core')||id==='simple'||id==='dayflow'||id==='plans'||id==='tracks'||id==='fajrC'||p.querySelector('#signal'))return 'today';
  if(TASK_PANELS.indexOf(id)>=0)return 'tasks';
  if(['mushaf','rizq','counters','hifz','stories','mentor','dustur','m-prom','calm'].indexOf(id)>=0)return 'soul';
  if(['money','savings'].indexOf(id)>=0)return 'money';
@@ -3348,6 +3348,7 @@ function handleGo(go,inApp){go=String(go||'day');const T=(sel,fn)=>{setTimeout((
   case 'story':T('#stories');break;
   case 'read':goPage('today');T('#simple [data-id="read"]');break;
   case 'plans':goPage('today');T('#plans');break;
+  case 'tracks':goPage('today');T('#tracks');break;
   case 'fajr':goPage('today');T('#fajrC');break;
   case 'goal':goPage('money');T($('#savings')?'#savings':'#money');break;
   case 'review':goPage('today');setTimeout(()=>openReview('today'),250);break;
@@ -3824,6 +3825,7 @@ function plLog(id,k,units,min){const g=plGoal(id);if(!g)return;g.log=g.log||{};c
  const wk=plWeek(g);
  if(plGoalDone(g)){try{burst(160);}catch(e){}toast('🏆','ما شاء الله! خلّصت '+g.t,'كل الـ'+g.total+' '+g.unit+'. فخور بيك');}
  else toast(g.ic,'عاش! سجّلت '+g.t,(g.kind==='course'&&units?'+'+units+' '+g.unit+' · بقيت '+g.done+' من '+g.total+' · ':'')+'الأسبوع ده '+wk+' من '+g.per);
+ if(g.track&&typeof trNextStep==='function'){const ns=trNextStep(g.track);if(ns)setTimeout(()=>toast('👣','الخطوة الجاية في التراك',ns),2900);}
  plReplan(true);}
 
 /* ---------- Fajr card ---------- */
@@ -3934,7 +3936,7 @@ function plItemRow(k,it,isToday,now){const g=it.g?plGoal(it.id):null,x=it.g?null
  const sub=g?(g.kind==='course'?'جلسة '+plDur(it.dur)+' · '+(g.done||0)+'/'+g.total+' '+g.unit:'جلسة '+plDur(it.dur)):plDur(it.dur)+(x.due?' · قبل '+plDayName(x.due):'')+(it.fix?' · ميعاد ثابت':'');
  const act=g?(isToday?'<button type="button" class="pl-ok" data-gyes="'+k+'|'+g.id+'" data-u="1" data-m="'+it.dur+'" aria-label="عملتها">✓</button>':'')
   :'<button type="button" class="pl-ok" data-tdone="'+x.id+'" aria-label="خلصت">✓</button>'+(isToday?'<button type="button" class="pl-sm" data-tlater="'+x.id+'" aria-label="أجّلها لبكرة">⏭</button>':'');
- return '<div class="pl-it '+st+(g?' g':'')+'"><span class="pl-tm mono">'+MOSPlan.fmt(it.min)+'</span><span class="pl-ic">'+esc(ic)+'</span><span class="pl-tx"><b>'+esc(name)+'</b><small>'+(st==='now'?'<em>دلوقتي · لحد '+MOSPlan.fmt(end)+'</em> · ':'')+esc(sub)+'</small></span>'+act+'</div>';}
+ return '<div class="pl-it '+st+(g?' g':'')+'"><span class="pl-tm mono">'+MOSPlan.fmt(it.min)+'</span><span class="pl-ic">'+esc(ic)+'</span><span class="pl-tx"><b>'+esc(name)+'</b><small>'+(st==='now'?'<em>دلوقتي · لحد '+MOSPlan.fmt(end)+'</em> · ':'')+esc(sub)+(g&&g.track&&typeof trNextStep==='function'&&trNextStep(g.track)?' · 👣 '+esc(trNextStep(g.track)):'')+'</small></span>'+act+'</div>';}
 function renderPlans(){const sec=$('#plans');if(!sec)return;if(!hasPlan()){$('#plToday').innerHTML='<div class="sub">مستني مواعيد يومك تتحمّل…</div>';return;}
  const t=todayKey(),now=plMin();const D=(PL.sched&&PL.sched.days)||{};
  /* check-ins */
@@ -3966,10 +3968,225 @@ function renderPlans(){const sec=$('#plans');if(!sec)return;if(!hasPlan()){$('#p
  const open=PL.tasks.filter(x=>!x.done).sort((a,b)=>{const wa=plWhere(a.id),wb=plWhere(b.id);const ka=wa?wa.k+String(wa.it.min).padStart(5,'0'):'z',kb=wb?wb.k+String(wb.it.min).padStart(5,'0'):'z';return ka<kb?-1:ka>kb?1:0;});
  $('#plTasks').innerHTML=open.length?open.map(x=>{const w=plWhere(x.id);const late=w&&x.due&&w.k>x.due;
   return '<div class="pl-tk"><span class="pl-ic">'+(+x.pri===2?'🔥':+x.pri===1?'⭐':'📌')+'</span><span class="pl-tx"><b>'+esc(x.t)+'</b><small>'+(w?plDayName(w.k)+' '+MOSPlan.fmt(w.it.min)+' · ':'<span style="color:var(--ember)">مفيش وقت فاضي</span> · ')+plDur(x.dur)+(x.due?' · الديدلاين '+plDayName(x.due):'')+(late?' <span style="color:var(--ember)">⚠ بعد الديدلاين، فضّي وقت أو قصّر المدة</span>':'')+'</small></span><button type="button" class="pl-ok" data-tdone="'+x.id+'" aria-label="خلصت">✓</button><button type="button" class="svx" data-tdel="'+x.id+'" aria-label="امسح">✕</button></div>';}).join(''):'<div class="sub">مفيش مهام مفتوحة.</div>';
- const left=today.length;$('#plCnt').textContent=(ch.length?'✅ '+ch.length+' · ':'')+left+' النهارده';}
+ const left=today.length;$('#plCnt').textContent=(ch.length?'✅ '+ch.length+' · ':'')+left+' النهارده';try{if(typeof renderTracks==='function')renderTracks();}catch(e){}}
+
+/* ---------- تراكاتي: he writes what he wants to reach, the app turns it into a track (stages → steps), puts sessions in his week, and a dashboard shows where he is ---------- */
+const TR=Object.assign({tracks:[]},LS.get('tracks')||{});TR.tracks=TR.tracks||[];
+const saveTR=()=>LS.set('tracks',TR);
+const trN=s=>String(s||'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
+const trNorm=s=>trN(s).toLowerCase().replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').replace(/[ًٌٍَُِّْـ]/g,'');
+const trNums=s=>(trN(s).match(/\d+(?:[.,]\d+)?/g)||[]).map(x=>+x.replace(',','.'));
+/* the templates: detected from what he writes, every one is stages of small concrete steps ({x} = his own words) */
+const TR_T={
+ quit:{n:'أبطّل عادة',ic:'🚭',per:7,len:10,pref:'any',re:/ابطل|بطل |اقلع|سجاير|سجائر|تدخين|سيجار|فيب|ادمان|سوشيال|اقلل الموبايل|السهر/,
+  st:[['البداية',['اكتب 3 أسباب إنت عاوز تبطّل علشانها وحطها قدامك','شيل كل حاجة بتفكّرك بيها (الأماكن، التطبيقات، الحاجات)','جهّز بديل لما الرغبة تيجي (مية، مشي، استغفار، تكلّم حد)','قول لحد قريب منك علشان يساعدك']],
+   ['أول أسبوع',['3 أيام من غير','أسبوع كامل من غير','اعرف أكتر وقت بتضعف فيه وخطّط له']],
+   ['الثبات',['أسبوعين من غير','شهر كامل من غير','احسب وفّرت قد إيه (وقت أو فلوس)']],
+   ['الحرية',['شهرين من غير','90 يوم من غير 🏆','ساعد حد تاني يبطّل']]]},
+ weight:{n:'وزن ورشاقة',ic:'⚖',per:5,len:30,pref:'any',re:/اخس|خس |تخسيس|وزن|كيلو|كجم|رجيم|دايت|كرش|تنشيف|سمنه|تخن/,
+  st:[['البداية',['اوزن نفسك وسجّل الرقم هنا','صوّر نفسك صورة «قبل»','احسب احتياجك اليومي من السعرات','وقّف المشروبات المسكّرة والعصاير']],
+   ['أول أسبوعين',['اشرب 2.5 لتر مية كل يوم','امشي 7000 خطوة كل يوم','بروتين في كل وجبة','نام 7 ساعات']],
+   ['العادات',['خطّط وجبات الأسبوع مرة واحدة','3 تمارين في الأسبوع لمدة شهر','مفيش أكل بعد العشا بساعتين','وصلت لربع الهدف']],
+   ['نص الطريق',['وصلت لنص الهدف','زوّد شدّة التمرين','صورة مقارنة مع «قبل»']],
+   ['الوصول',['وصلت للوزن المطلوب 🏆','4 أسابيع ثبات على الوزن الجديد']]]},
+ quran:{n:'حفظ قرآن',ic:'📖',per:6,len:20,pref:'morning',re:/قران|حفظ|احفظ|جزء|اجزاء|سوره|تجويد|ختم/,
+  st:[['النية والتجهيز',['حدّد المقدار اليومي (مثلاً نص صفحة)','اختار مصحف واحد وقارئ تسمعه','اختار وقت ثابت للحفظ (بعد الفجر أحسن)']],
+   ['البداية',['احفظ أول صفحة وسمّعها لحد','أسبوع كامل حفظ كل يوم','مراجعة يومية للي حفظته قبل كده']],
+   ['الثبات',['خلّصت أول ربع من المقدار','سمّع على شيخ أو صاحب','شهر من غير انقطاع']],
+   ['الختام',['خلّصت المقدار كله 🏆','مراجعة كاملة','سمّعته كله مرة واحدة']]]},
+ study:{n:'مذاكرة وامتحان',ic:'🎓',per:6,len:60,pref:'any',re:/امتحان|ثانويه|ترم|مذاكره|اذاكر|جامعه|كليه|شهاده|اختبار|ماجستير|دكتوراه|ielts|toefl|pmp|cma|cpa|certif/,
+  st:[['التخطيط',['اكتب المنهج كله في قائمة','قسّمه على الأيام اللي فاضلة','جهّز مصادرك (كتب، ملخصات، فيديوهات)']],
+   ['أول ثلث',['خلّصت أول ثلث المنهج','ملخص بخطك لكل جزء','حل أسئلة على اللي خلّصته']],
+   ['تاني ثلث',['خلّصت تاني ثلث','حل امتحان سابق','راجع أخطاءك واكتبها']],
+   ['آخر ثلث والمراجعة',['خلّصت المنهج كله','مراجعة نهائية','امتحان تجريبي كامل بالوقت','دخلت الامتحان 🏆']]]},
+ lang:{n:'لغة',ic:'🗣',per:5,len:20,pref:'any',re:/انجليزي|انجلش|english|اسباني|spanish|فرنساوي|فرنسي|french|الماني|german|ايطالي|تركي|كوري|ياباني|صيني|روسي|لغه|لغات/,
+  st:[['الأساسيات',['اختار كورس أو تطبيق واحد لـ{x} والتزم بيه','الحروف والنطق','أول 100 كلمة','عرّف نفسك في دقيقة']],
+   ['المبتدئ A1–A2',['الضمائر والأفعال الأساسية','500 كلمة (فلاش كاردز كل يوم)','اكتب 5 جمل عن يومك كل يوم لمدة أسبوع','بودكاست مبتدئين 10 دقايق كل يوم']],
+   ['المحادثة',['اتكلم مع نفسك 5 دقايق بصوت عالي','أول محادثة مع شخص (صاحب أو تطبيق تبادل لغات)','الماضي والمستقبل','حلقة بترجمة بنفس اللغة']],
+   ['المتوسط B1',['1500 كلمة','مقالة قصيرة من غير قاموس','اكتب فقرة وصحّحها','محادثة 15 دقيقة من غير ما توقف']],
+   ['الطلاقة',['فيلم من غير ترجمة','كتاب صغير كامل','امتحان مستوى تجريبي 🏆']]]},
+ code:{n:'برمجة وتقنية',ic:'💻',per:4,len:45,pref:'evening',re:/برمج|بايثون|python|جافا|java|react|فلاتر|flutter|ويب|web|موقع|تطبيق|ابلكيشن|داتا|data|ذكاء اصطناعي|machine|سايبر|cyber|باك اند|فرونت|backend|frontend|sql|كود|كمبيوتر/,
+  st:[['التجهيز',['حدّد المجال بالظبط وكورس واحد هتمشي عليه','نزّل الأدوات (VS Code + اللغة)','أول برنامج Hello World','المتغيرات وأنواع البيانات']],
+   ['المنطق',['الشروط if / else','اللوبس','الدوال functions','حل 10 مسائل صغيرة']],
+   ['البيانات والأدوات',['القوائم والقواميس','التعامل مع الملفات','Git و GitHub: ارفع أول كود','حل 20 مسألة']],
+   ['أول مشروع',['اختار مشروع صغير (آلة حاسبة، To-do…)','ابنيه خطوة خطوة','ارفعه على GitHub واكتب README']],
+   ['الاحتراف',['اتعلم أهم فريموورك في مجالك','مشروع حقيقي متوسط','بورتفوليو فيه 3 مشاريع','قدّم على أول شغل أو فريلانس 🏆']]]},
+ business:{n:'بيزنس ودخل',ic:'🚀',per:3,len:60,pref:'evening',re:/بيزنس|بزنس|مشروع|شركه|ستارت|startup|متجر|ستور|store|تجاره|براند|دخل|فريلانس|freelanc|اكسب|ابيع/,
+  st:[['الفكرة',['اكتب المشكلة اللي بتحلّها في سطرين','كلّم 10 عملاء محتملين','ادرس 3 منافسين: بيعملوا إيه وبكام']],
+   ['الخطة',['حدّد العميل المستهدف بالظبط','التكاليف والتسعير','خطة صفحة واحدة: هتبيع إيه، لمين، إزاي']],
+   ['أول نسخة',['اعمل أبسط نسخة (MVP)','صفحة سوشيال أو موقع','أول عميل يدفع']],
+   ['النمو',['10 عملاء','نظام ثابت للتسويق','أول شهر بربح 🏆']]]},
+ reading:{n:'قراية',ic:'📚',per:6,len:20,pref:'evening',re:/كتاب|كتب|اقرا|قرايه|قراءه|روايه/,
+  st:[['البداية',['اختار أول كتاب','حدّد 20 صفحة كل يوم','وقت ثابت للقراية']],
+   ['أول كتاب',['خلّصت أول كتاب','اكتب أهم 3 أفكار منه','اختار الكتاب اللي بعده']],
+   ['الثبات',['نص الهدف','شهر قراية من غير انقطاع','ناقش كتاب مع حد']],
+   ['الوصول',['خلّصت الهدف 🏆','اعمل قايمة كتب السنة الجاية']]]},
+ fitness:{n:'رياضة ولياقة',ic:'💪',per:3,len:45,pref:'any',re:/جيم|gym|تمرين|تمارين|عضل|لياقه|جري|اجري|ماراثون|سباحه|كوره|بوكس|كاليسثنكس|عقله|رياضه|بطن/,
+  st:[['البداية',['حدّد الهدف بالظبط (عضل، لياقة، جري…)','جدول 3 أيام في الأسبوع','اتعلم الأداء الصح للتمارين الأساسية','أول أسبوع كامل']],
+   ['الالتزام',['4 أسابيع من غير ما تفوّت','زوّد الوزن أو المسافة 5%','بروتين ونوم كفاية']],
+   ['التقدّم',['سجّل أرقامك كل أسبوع','برنامج أصعب','قيس تقدّمك (صورة أو أرقام)']],
+   ['الهدف',['وصلت للرقم اللي عاوزه 🏆','حدّد الهدف الجاي']]]},
+ skill:{n:'مهارة',ic:'🎨',per:4,len:40,pref:'any',re:/تصميم|فوتوشوب|photoshop|مونتاج|ماركتنج|تسويق|تصوير|رسم|جرافيك|ui|ux|كتابه|محتوي|يوتيوب|تيك توك|طبخ|موسيقي|جيتار|عود|بيانو|مهاره|سواقه|excel|اكسل/,
+  st:[['الوضوح',['حدّد بالظبط عاوز توصل لإيه في {x}','اختار مصدر واحد تتعلم منه','جهّز أدواتك']],
+   ['الأساسيات',['خلّص الأساسيات','5 تمارين صغيرة تطبيق','اعرض شغلك على حد وخد رأيه']],
+   ['التطبيق',['أول مشروع كامل','قلّد 3 أعمال لمحترفين','اكتب أخطاءك واتعلم منها']],
+   ['الاحتراف',['3 أعمال في بورتفوليو','أول شغل أو عميل 🏆']]]},
+ gen:{n:'هدف',ic:'🎯',per:3,len:30,pref:'any',re:/$^/,
+  st:[['الوضوح',['اكتب الهدف بالظبط: لما توصله هيبقى شكله إيه؟','اعرف إنت فين دلوقتي','قسّمه لخطوات صغيرة وضيفها هنا']],
+   ['البداية',['أول خطوة صغيرة','أسبوع التزام','اعرف أكبر عائق وحلّه']],
+   ['نص الطريق',['وصلت لنص الطريق','راجع الخطة وظبّطها']],
+   ['الوصول',['حقّقت الهدف 🏆','احتفل وحدّد الجاي']]]}};
+const TR_ORDER=['quit','weight','quran','study','lang','code','business','reading','fitness','skill'];
+const TR_IC=['🎯','🗣','💻','⚖','💪','📖','📚','🎓','🚀','🎨','🚭','🧠','✍','🕌','💰','🌱'];
+function trDetect(txt){const n=trNorm(txt);for(const k of TR_ORDER)if(TR_T[k].re.test(n))return k;return 'gen';}
+function trTopic(txt){return String(txt||'').replace(/^\s*(انا\s+|أنا\s+)?(عاوز|عايز|عاوزه|عايزه|نفسي|حابب|محتاج|أريد|اريد|ابغى|أبغى|ودي)\s+/,'').replace(/^(أ|ا)?(تعلم|توصل|بدأ|ابدأ|أبدأ)\s+/,'').trim()||'هدفك';}
+/* a number he wants to reach, if he wrote one */
+function trMetric(ty,txt){const n=trNorm(txt),N=trNums(txt);
+ if(ty==='weight'){const gain=/ازود|ارفع|زياده|اتخن|اسمن/.test(n);const big=N.filter(v=>v>=30);
+  if(big.length>=2)return {u:'كيلو',s:big[0],tg:big[1],delta:0};
+  const d=N.find(v=>v>0&&v<30);return {u:'كيلو',s:'',tg:'',delta:d?(gain?d:-d):0};}
+ if(ty==='quran'){if(/القران كله|ختم|القران كامل/.test(n))return {u:'جزء',s:0,tg:30};const j=/(\d+)\s*(جزء|اجزاء)/.exec(n);if(j)return {u:'جزء',s:0,tg:+j[1]};if(/جزء|عم|تبارك/.test(n))return {u:'جزء',s:0,tg:1};return {u:'صفحة',s:0,tg:''};}
+ if(ty==='reading'){const b=N.find(v=>v>0);return {u:'كتاب',s:0,tg:b||12};}
+ const m=/(\d+(?:\.\d+)?)\s*([^\s\d]{2,12})/.exec(trN(txt));if(m&&ty!=='quit'&&ty!=='study')return {u:m[2].replace(/[،,.]$/,''),s:0,tg:+m[1]};
+ return null;}
+const TR_LANG=[[/انجليزي|انجلش|english/,'الإنجليزي'],[/اسباني|spanish/,'الإسباني'],[/فرنس|french/,'الفرنساوي'],[/الماني|german/,'الألماني'],[/ايطالي/,'الإيطالي'],[/تركي/,'التركي'],[/كوري/,'الكوري'],[/ياباني/,'الياباني'],[/صيني/,'الصيني'],[/روسي/,'الروسي']];
+function trBuildStages(ty,txt){let x=trTopic(txt);if(ty==='lang'){const n=trNorm(txt);const f=TR_LANG.find(q=>q[0].test(n));x=f?f[1]:'اللغة';}return TR_T[ty].st.map(s=>({n:s[0],s:s[1].map(t=>({id:uid(),t:t.replace('{x}',x),d:''}))}));}
+
+/* ---------- reading a track ---------- */
+const trTrack=id=>TR.tracks.find(t=>t.id===id);
+const trSteps=t=>t.st.reduce((a,s)=>a.concat(s.s),[]);
+function trCur(t){for(let i=0;i<t.st.length;i++){const s=t.st[i].s.find(x=>!x.d);if(s)return {i,s};}return null;}
+function trNextStep(id){const t=trTrack(id);if(!t)return '';const c=trCur(t);return c?c.s.t:'';}
+function trMval(t){if(!t.m)return null;const ks=Object.keys(t.m.log||{}).sort();return ks.length?+t.m.log[ks[ks.length-1]]:(t.m.s===''?null:+t.m.s);}
+function trMpct(t){if(!t.m||t.m.s===''||t.m.tg===''||+t.m.s===+t.m.tg)return null;const v=trMval(t);if(v==null)return 0;return Math.max(0,Math.min(1,(v-t.m.s)/(t.m.tg-t.m.s)));}
+function trSpct(t){const a=trSteps(t);return a.length?a.filter(x=>x.d).length/a.length:0;}
+function trPct(t){const m=trMpct(t);return m==null?trSpct(t):m;}
+function trIsDone(t){return trPct(t)>=1||trSteps(t).every(x=>x.d);}
+function trActive(t,k){if(t.act&&t.act[k])return true;const g=t.gid&&plGoal(t.gid);return !!(g&&g.log&&g.log[k]);}
+function trStreak(t){let k=todayKey(),n=0;if(!trActive(t,k))k=plDays(k,-1);while(trActive(t,k)&&n<999){n++;k=plDays(k,-1);}return n;}
+function trBump(t){const k=todayKey();t.act=t.act||{};t.act[k]=(t.act[k]||0)+1;}
+function trPace(t){const t0=todayKey(),p=trPct(t);if(trIsDone(t))return {c:'good',s:'🏆 وصلت. ما شاء الله عليك'};
+ const all=trSteps(t),left=all.filter(x=>!x.d).length;
+ if(t.by){const tot=Math.max(1,(parseKey(t.by)-parseKey(t.c))/864e5),el=(parseKey(t0)-parseKey(t.c))/864e5,dl=Math.ceil((parseKey(t.by)-parseKey(t0))/864e5);
+  if(dl<0)return {c:'warn',s:'الميعاد عدّى · حدّد ميعاد جديد وكمّل، إنت قرّبت'};
+  const exp=Math.min(1,Math.max(0,el/tot));const wk=Math.max(1,dl/7);
+  if(p+0.05>=exp)return {c:'good',s:'✓ ماشي في معادك · المفروض '+Math.round(exp*100)+'% وإنت '+Math.round(p*100)+'% · فاضل '+dl+' يوم'};
+  return {c:'warn',s:'⚠ متأخر شوية: المفروض تكون '+Math.round(exp*100)+'%. محتاج حوالي '+Math.ceil(left/wk)+' خطوة في الأسبوع علشان تلحق'};}
+ const dn=all.length-left,wks=Math.max(1,(parseKey(t0)-parseKey(t.c))/864e5/7);
+ if(dn>=2){const rate=dn/wks;const end=plDays(t0,Math.ceil(left/rate*7));return {c:'',s:'بالمعدّل ده ('+(Math.round(rate*10)/10)+' خطوة في الأسبوع) هتوصل حوالي '+(+end.slice(8))+'/'+(+end.slice(5,7))+'/'+end.slice(0,4)};}
+ return {c:'',s:'خلّص كام خطوة وأنا أحسبلك هتوصل إمتى'};}
+const trRing=(p,sz)=>{sz=sz||64;const r=sz/2-6,C=2*Math.PI*r;return '<svg class="tr-ring" width="'+sz+'" height="'+sz+'" viewBox="0 0 '+sz+' '+sz+'" aria-hidden="true"><circle cx="'+sz/2+'" cy="'+sz/2+'" r="'+r+'" class="bg"/><circle cx="'+sz/2+'" cy="'+sz/2+'" r="'+r+'" class="fg" stroke-dasharray="'+(C*p).toFixed(1)+' '+C.toFixed(1)+'" transform="rotate(-90 '+sz/2+' '+sz/2+')"/></svg>';};
+function trSpark(t){const L=Object.keys(t.m.log||{}).sort().slice(-20).map(k=>+t.m.log[k]);if(t.m.s!==''&&(!L.length||+L[0]!==+t.m.s)&&Object.keys(t.m.log||{}).length<20)L.unshift(+t.m.s);if(L.length<2)return '';
+ const vs=L.concat(t.m.tg===''?[]:[+t.m.tg]);const lo=Math.min(...vs),hi=Math.max(...vs),W=140,H=36,sp=hi-lo||1;const y=v=>(H-3-(v-lo)/sp*(H-6)).toFixed(1);
+ const pts=L.map((v,i)=>(i*(W/(L.length-1))).toFixed(1)+','+y(v)).join(' ');
+ return '<svg class="tr-spark" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" aria-hidden="true">'+(t.m.tg!==''?'<line x1="0" x2="'+W+'" y1="'+y(+t.m.tg)+'" y2="'+y(+t.m.tg)+'" class="tg"/>':'')+'<polyline points="'+pts+'"/></svg>';}
+
+/* ---------- the panel ---------- */
+let TRD=null;/* the track being drafted in the add form */
+function buildTracks(){if($('#tracks'))return;const after=$('#plans')||$('#fajrC')||$('#dayflow');if(!after)return;
+ const sec=el('section','pnl tracks');sec.id='tracks';sec.dataset.page='today';
+ const opt=(a,v)=>a.map(x=>'<option value="'+x[0]+'"'+(x[0]==v?' selected':'')+'>'+x[1]+'</option>').join('');
+ sec.innerHTML='<div class="ph"><div class="glyph" style="color:var(--mint);border-color:rgba(124,242,156,.4);background:rgba(124,242,156,.08)">🧭</div><div><h2>تراكاتي</h2><span class="en">TRACKS · قول عاوز توصل لإيه وأنا أعملّك تراك</span></div><span class="cnt" id="trCnt"></span></div>'+
+  '<div id="trDash"></div><div id="trList"></div>'+
+  '<details class="svnew" id="trNew"><summary class="minibtn gold" style="display:inline-block">+ تراك جديد</summary><div class="svform">'+
+   '<label class="pl-l">عاوز توصل لإيه؟ اكتبها بكلامك<textarea id="trTxt" rows="2" maxlength="160" placeholder="مثلاً: أتعلم إنجليزي وأتكلم بطلاقة · أخس 10 كيلو · أحفظ جزء عم · أبطّل السجاير · أعمل بيزنس أونلاين"></textarea></label>'+
+   '<div class="pl-pre" id="trEx">'+['أتعلم إنجليزي','أخس 10 كيلو','أتعلم برمجة بايثون','أحفظ جزء عم','أقرا 12 كتاب السنة دي','أبطّل السجاير'].map(x=>'<button type="button" class="minibtn" data-trex="'+x+'">'+x+'</button>').join('')+'</div>'+
+   '<button class="minibtn gold" id="trGen" type="button" style="width:100%;padding:9px">✨ اعملّي التراك</button>'+
+   '<div id="trPrev"></div></div></details>'+
+  '<p class="note">اكتب أي حاجة عاوز توصلها، والتطبيق يقسّمها لمراحل وخطوات صغيرة، ويحط جلسات ليها في أوقاتك الفاضية ويفكّرك بيها. علّم كل خطوة تخلّصها، والداشبورد يوريك إنت فين ومتأخر ولا ماشي في معادك.</p>';
+ after.insertAdjacentElement('afterend',sec);
+ const gen=()=>{const txt=$('#trTxt').value.trim();if(!txt){$('#trTxt').focus();return;}const ty=trDetect(txt);
+  TRD={txt,ty,t:trTopic(txt).slice(0,40),ic:TR_T[ty].ic,st:trBuildStages(ty,txt),m:trMetric(ty,txt),per:TR_T[ty].per,len:TR_T[ty].len,pref:TR_T[ty].pref};trPrev();};
+ $('#trGen').addEventListener('click',gen);
+ $('#trEx').addEventListener('click',e=>{const b=e.target.closest('[data-trex]');if(!b)return;$('#trTxt').value=b.dataset.trex;gen();});
+ sec.addEventListener('change',e=>{const T=e.target;
+  if(T.id==='trTy'&&TRD){TRD.ty=T.value;TRD.ic=TR_T[T.value].ic;TRD.st=trBuildStages(T.value,TRD.txt);TRD.m=trMetric(T.value,TRD.txt);TRD.per=TR_T[T.value].per;TRD.len=TR_T[T.value].len;TRD.pref=TR_T[T.value].pref;trPrev();}});
+ sec.addEventListener('input',e=>{const T=e.target;if(T.id==='trMs'&&TRD&&TRD.m&&TRD.m.delta&&!$('#trMt').dataset.touched){const v=+T.value;$('#trMt').value=v>0?Math.round((v+TRD.m.delta)*10)/10:'';}
+  if(T.id==='trMt')T.dataset.touched=1;});
+ sec.addEventListener('click',e=>{const T=e.target;let b;
+  if(b=T.closest('[data-tric]')){if(TRD){TRD.ic=b.dataset.tric;sec.querySelectorAll('[data-tric]').forEach(x=>x.classList.toggle('on',x===b));}return;}
+  if(T.closest('#trStart')){trCreate();return;}
+  if(b=T.closest('[data-trstep]')){const [tid,sid]=b.dataset.trstep.split('|');trToggle(tid,sid,e);return;}
+  if(b=T.closest('[data-trdel-s]')){const [tid,sid]=b.dataset.trdelS.split('|');const t=trTrack(tid);if(!t)return;t.st.forEach(s=>s.s=s.s.filter(x=>x.id!==sid));saveTR();renderTracks();return;}
+  if(b=T.closest('[data-tradd]')){const [tid,si]=b.dataset.tradd.split('|');const inp=b.previousElementSibling;const v=(inp&&inp.value||'').trim();if(!v){inp&&inp.focus();return;}const t=trTrack(tid);if(!t)return;t.st[+si].s.push({id:uid(),t:v.slice(0,80),d:''});saveTR();trOpen[tid]=1;renderTracks();toast('➕','ضفت خطوة','في مرحلة '+t.st[+si].n);return;}
+  if(b=T.closest('[data-trlog]')){const t=trTrack(b.dataset.trlog);if(!t||!t.m)return;const inp=b.previousElementSibling;const v=parseFloat(trN(inp&&inp.value));if(!isFinite(v)){inp&&inp.focus();return;}
+   t.m.log=t.m.log||{};t.m.log[todayKey()]=v;if(t.m.s==='')t.m.s=v;trBump(t);saveTR();renderTracks();const p=trMpct(t);
+   if(p!=null&&p>=1){try{burst(160);}catch(x){}toast('🏆','وصلت لهدفك في '+t.t+'!',v+' '+t.m.u);}else toast(t.ic,'سجّلت: '+v+' '+t.m.u,p!=null?'وصلت '+Math.round(p*100)+'% من الهدف':'');return;}
+  if(b=T.closest('[data-trpause]')){const t=trTrack(b.dataset.trpause);if(!t)return;t.arch=!t.arch;const g=t.gid&&plGoal(t.gid);if(g)g.arch=t.arch;saveTR();savePL();plReplan(true);toast(t.ic,t.arch?'وقّفت التراك مؤقتاً':'رجّعت التراك',t.t);return;}
+  if(b=T.closest('[data-trdel]')){const t=trTrack(b.dataset.trdel);if(!t||!confirm('أمسح تراك "'+t.t+'" وكل تقدّمك فيه؟'))return;TR.tracks=TR.tracks.filter(x=>x!==t);if(t.gid){PL.goals=PL.goals.filter(g=>g.id!==t.gid);PL.due=PL.due.filter(d=>d.id!==t.gid);savePL();}saveTR();plReplan(true);renderTracks();return;}
+  if(b=T.closest('[data-trren]')){const t=trTrack(b.dataset.trren);if(!t)return;const v=prompt('اسم التراك',t.t);if(!v||!v.trim())return;t.t=v.trim().slice(0,40);const g=t.gid&&plGoal(t.gid);if(g)g.t=t.t;saveTR();savePL();plReplan(true);return;}
+  if(b=T.closest('[data-trby]')){const t=trTrack(b.dataset.trby);if(!t)return;const v=prompt('عاوز توصل قبل إمتى؟ (سنة-شهر-يوم، مثلاً 2027-03-01) · سيبها فاضية تشيل الميعاد',t.by||'');if(v==null)return;const k=trN(v).trim();
+   if(k&&!/^\d{4}-\d{2}-\d{2}$/.test(k)){toast('✕','اكتب التاريخ كده: 2027-03-01','');return;}t.by=k;saveTR();renderTracks();return;}
+  if(b=T.closest('[data-trsess]')){const t=trTrack(b.dataset.trsess);if(!t)return;trAddGoal(t,TR_T[t.ty]?TR_T[t.ty].per:3,TR_T[t.ty]?TR_T[t.ty].len:30,'any');saveTR();plReplan(true);const w=plWhere(t.gid);toast(t.ic,'رجّعت جلسات التراك',w?'أول جلسة '+plDayName(w.k)+' '+MOSPlan.fmt(w.it.min):'');return;}
+  if(b=T.closest('[data-tropen]')){const id=b.dataset.tropen;trOpen[id]=!trOpen[id];renderTracks();return;}});
+ renderTracks();}
+const trOpen={};
+function trPrev(){const box=$('#trPrev');if(!box||!TRD)return;const D=TRD,opt=(a,v)=>a.map(x=>'<option value="'+x[0]+'"'+(x[0]==v?' selected':'')+'>'+x[1]+'</option>').join('');const m=D.m||{u:'',s:'',tg:''};
+ box.innerHTML='<div class="tr-prev"><div class="tr-ph">'+esc(D.ic)+' فهمت إنه <b>'+esc(TR_T[D.ty].n)+'</b> · ده التراك بتاعك</div>'+
+  '<input id="trT" maxlength="40" value="'+esc(D.t)+'" placeholder="اسم التراك">'+
+  '<div class="svic">'+TR_IC.map(x=>'<button type="button" data-tric="'+x+'"'+(x===D.ic?' class="on"':'')+'>'+x+'</button>').join('')+'</div>'+
+  '<label class="pl-l">نوعه (لو فهمت غلط غيّره)<select id="trTy">'+opt(Object.keys(TR_T).map(k=>[k,TR_T[k].ic+' '+TR_T[k].n]),D.ty)+'</select></label>'+
+  '<ol class="tr-pst">'+D.st.map((s,i)=>'<li><b>المرحلة '+(i+1)+': '+esc(s.n)+'</b><small>'+s.s.map(x=>esc(x.t)).join(' · ')+'</small></li>').join('')+'</ol>'+
+  '<div class="tr-mf"><div class="pl-l">عاوز تتابع رقم؟ (اختياري)'+(D.m&&D.m.delta?' <em>هتـ'+(D.m.delta<0?'خس ':'زوّد ')+Math.abs(D.m.delta)+' كيلو</em>':'')+'</div>'+
+   '<div class="tr-m3"><input id="trMu" maxlength="12" placeholder="الوحدة (كيلو، كتاب…)" value="'+esc(m.u||'')+'"><input id="trMs" type="number" inputmode="decimal" step="any" placeholder="دلوقتي" value="'+(m.s===''||m.s==null?'':m.s)+'"><input id="trMt" type="number" inputmode="decimal" step="any" placeholder="الهدف" value="'+(m.tg===''||m.tg==null?'':m.tg)+'"></div></div>'+
+  '<div class="mrow1"><label class="pl-l">جلسات في الأسبوع<select id="trPer">'+opt([[0,'من غير جلسات']].concat([1,2,3,4,5,6,7].map(n=>[n,n===7?'كل يوم':n+' مرات'])),D.per)+'</select></label><label class="pl-l">الجلسة قد إيه<select id="trLen">'+opt([[10,'10 دقايق'],[15,'15 دقيقة'],[20,'20 دقيقة'],[30,'30 دقيقة'],[45,'45 دقيقة'],[60,'ساعة'],[90,'ساعة ونص']],D.len)+'</select></label></div>'+
+  '<div class="mrow1"><label class="pl-l">إمتى أحسن<select id="trPref">'+opt(Object.keys(PL_PREF).map(k=>[k,PL_PREF[k]]),D.pref)+'</select></label><label class="pl-l">توصل قبل (اختياري)<input id="trBy" type="date"></label></div>'+
+  '<button class="minibtn gold" id="trStart" type="button" style="width:100%;padding:10px">🚀 ابدأ التراك</button>'+
+  '<div class="sub">تقدر تضيف أو تمسح خطوات بعد ما تبدأ.</div></div>';}
+function trAddGoal(t,per,len,pref){if(!(per>0))return;const g={id:uid(),t:t.t.slice(0,40),ic:t.ic,kind:'habit',total:0,done:0,unit:'جلسة',per,len:len||30,pref:pref||'any',time:'',by:'',log:{},c:Date.now(),track:t.id};PL.goals.push(g);t.gid=g.id;savePL();}
+function trCreate(){if(!TRD)return;const D=TRD;const title=($('#trT').value||'').trim()||D.t||'تراكي';
+ const u=($('#trMu').value||'').trim(),ms=$('#trMs').value,mt=$('#trMt').value;
+ const m=(u||ms!==''||mt!=='')&&mt!==''?{u:u||'',s:ms===''?'':+ms,tg:+mt,log:{}}:null;
+ if(m&&m.s!=='')m.log[todayKey()]=m.s;
+ const t={id:uid(),t:title.slice(0,40),desc:D.txt.slice(0,160),ty:D.ty,ic:D.ic,c:todayKey(),by:$('#trBy').value||'',st:D.st,m,act:{},gid:''};
+ TR.tracks.unshift(t);trAddGoal(t,+$('#trPer').value||0,+$('#trLen').value||30,$('#trPref').value||'any');saveTR();
+ TRD=null;$('#trPrev').innerHTML='';$('#trTxt').value='';$('#trNew').open=false;trOpen[t.id]=0;
+ plReplan(true);renderTracks();const w=t.gid&&plWhere(t.gid);
+ toast(t.ic,'بدأنا تراك: '+t.t,t.st.length+' مراحل · '+trSteps(t).length+' خطوة'+(w?' · أول جلسة '+plDayName(w.k)+' '+MOSPlan.fmt(w.it.min):''));
+ setTimeout(()=>{try{jump('#tracks');}catch(e){}},300);}
+function trToggle(tid,sid,e){const t=trTrack(tid);if(!t)return;let st=null,si=-1;t.st.forEach((s,i)=>{const x=s.s.find(q=>q.id===sid);if(x){st=x;si=i;}});if(!st)return;
+ if(st.d){st.d='';saveTR();renderTracks();return;}
+ st.d=todayKey();trBump(t);saveTR();try{sparks(e.clientX,e.clientY,14,['#7cf29c','#ffd166','#4cc9f0']);}catch(x){}
+ const stg=t.st[si],nx=trCur(t);
+ if(trSteps(t).every(x=>x.d)){try{burst(180);}catch(x){}toast('🏆','خلّصت التراك كله: '+t.t,'ما شاء الله. فخور بيك');const g=t.gid&&plGoal(t.gid);if(g){g.arch=true;savePL();plReplan(true);}}
+ else if(stg.s.every(x=>x.d)){try{burst(100);}catch(x){}toast('🎉','خلّصت مرحلة: '+stg.n,nx?'المرحلة الجاية: '+t.st[nx.i].n:'');}
+ else toast('✓','عاش! '+st.t,nx?'الجاي: '+nx.s.t:'');
+ renderTracks();}
+
+function renderTracks(){const sec=$('#tracks');if(!sec)return;const t0=todayKey(),ws=weekStartKey(t0);const L=TR.tracks;
+ const act=L.filter(t=>!t.arch&&!trIsDone(t));
+ $('#trCnt').textContent=L.length?act.length+' شغّال':'';
+ /* the dashboard: the big picture across all tracks */
+ if(!L.length){$('#trDash').innerHTML='<button type="button" class="pl-sp" onclick="document.getElementById(\'trNew\').open=true;document.getElementById(\'trTxt\').focus()"><span>🧭</span><span><b>ضيف أول تراك</b><small>اكتب عاوز توصل لإيه، وأنا أقسّمهولك مراحل وخطوات وأتابع معاك</small></span><em>‹</em></button>';$('#trList').innerHTML='';return;}
+ const avg=L.length?L.reduce((a,t)=>a+trPct(t),0)/L.length:0;
+ let wk=0;L.forEach(t=>trSteps(t).forEach(x=>{if(x.d&&x.d>=ws)wk++;}));
+ let d14='';let on14=0;for(let i=13;i>=0;i--){const k=plDays(t0,-i);const n=L.filter(t=>trActive(t,k)).length;if(n)on14++;d14+='<i class="'+(n>=2?'l2':n?'l1':'')+(k===t0?' now':'')+'" title="'+plDayName(k)+'"></i>';}
+ let best=0;L.forEach(t=>best=Math.max(best,trStreak(t)));
+ $('#trDash').innerHTML='<div class="tr-dash"><div class="tr-big">'+trRing(avg,86)+'<div><b class="mono">'+Math.round(avg*100)+'%</b><small>متوسط تقدّمك</small></div></div>'+
+  '<div class="tr-tiles"><div><b class="mono">'+act.length+'</b><small>تراك شغّال</small></div><div><b class="mono">'+wk+'</b><small>خطوة الأسبوع ده</small></div><div><b class="mono">🔥'+best+'</b><small>أيام ورا بعض</small></div><div><b class="mono">'+on14+'/14</b><small>يوم نشاط</small></div></div>'+
+  '<div class="tr-hm" aria-label="نشاطك آخر 14 يوم">'+d14+'</div></div>';
+ /* one card per track */
+ $('#trList').innerHTML=L.map(t=>{const p=trPct(t),sp=trSpct(t),mp=trMpct(t),cur=trCur(t),pace=trPace(t),done=trIsDone(t);const g=t.gid&&plGoal(t.gid);const all=trSteps(t),nd=all.filter(x=>x.d).length;
+  const path='<div class="tr-path" style="grid-template-columns:repeat('+t.st.length+',minmax(0,1fr))">'+t.st.map((s,i)=>{const dn=s.s.length&&s.s.every(x=>x.d);const c=cur&&cur.i===i;const f=s.s.length?s.s.filter(x=>x.d).length/s.s.length:0;
+   return '<div class="tr-node'+(dn?' done':c?' cur':'')+'"><i style="--f:'+(f*100).toFixed(0)+'%">'+(dn?'✓':i+1)+'</i><small>'+esc(s.n)+'</small></div>';}).join('')+'</div>';
+  let ses='';if(g){const w=plWeek(g),per=+g.per||0;let dots='';for(let i=0;i<per;i++)dots+='<i class="'+(i<w?'on':'')+'"></i>';const nx=plWhere(g.id);
+   ses='<div class="tr-row"><span class="pl-dots">'+dots+'</span><span>جلسات الأسبوع '+w+'/'+per+'</span>'+(nx&&!t.arch?'<span class="tr-nx">الجاية '+plDayName(nx.k)+' '+MOSPlan.fmt(nx.it.min)+'</span>':'')+'</div>';}
+  else if(!done&&!t.arch)ses='<div class="tr-row"><button type="button" class="pl-lnk" data-trsess="'+t.id+'">⏰ حطّلي جلسات للتراك ده في أسبوعي</button></div>';
+  let met='';if(t.m){const v=trMval(t);met='<div class="tr-met"><div class="tr-mh"><span>📈 <b class="mono">'+(v==null?'—':v)+'</b> '+esc(t.m.u)+(t.m.tg!==''?' <small>· الهدف '+t.m.tg+' '+esc(t.m.u)+'</small>':'')+'</span>'+(mp!=null?'<b class="mono" style="color:var(--mint)">'+Math.round(mp*100)+'%</b>':'')+'</div>'+trSpark(t)+
+   (done||t.arch?'':'<div class="svact"><input type="number" inputmode="decimal" step="any" placeholder="رقمك النهارده"><button type="button" class="minibtn" data-trlog="'+t.id+'">سجّل</button></div>')+'</div>';}
+  let h14='';for(let i=13;i>=0;i--){const k=plDays(t0,-i);h14+='<i class="'+(trActive(t,k)?'l1':'')+(k===t0?' now':'')+'"></i>';}
+  const stages=trOpen[t.id]?'<div class="tr-all">'+t.st.map((s,i)=>'<div class="tr-stg"><div class="pl-day">المرحلة '+(i+1)+' · '+esc(s.n)+' <small>'+s.s.filter(x=>x.d).length+'/'+s.s.length+'</small></div>'+
+    s.s.map(x=>'<div class="tr-st'+(x.d?' ok':'')+'"><button type="button" class="tr-cb" data-trstep="'+t.id+'|'+x.id+'" aria-label="'+(x.d?'رجّعها':'خلصتها')+'">'+(x.d?'✓':'')+'</button><span>'+esc(x.t)+(x.d?'<small>'+plDayName(x.d)+'</small>':'')+'</span><button type="button" class="svx" data-trdel-s="'+t.id+'|'+x.id+'" aria-label="امسح الخطوة">✕</button></div>').join('')+
+    '<div class="svact tr-addst"><input maxlength="80" placeholder="ضيف خطوة في المرحلة دي"><button type="button" class="minibtn" data-tradd="'+t.id+'|'+i+'">+</button></div></div>').join('')+'</div>':'';
+  return '<div class="tr-card'+(t.arch?' paused':'')+(done?' done':'')+'"><div class="tr-h"><span class="tr-ic">'+esc(t.ic)+'</span><span class="tr-tt"><b>'+esc(t.t)+'</b><small>'+esc((TR_T[t.ty]||TR_T.gen).n)+' · بدأت '+plDayName(t.c)+(t.by?' · <button type="button" class="pl-lnk" data-trby="'+t.id+'">قبل '+plDayName(t.by)+'</button>':' · <button type="button" class="pl-lnk" data-trby="'+t.id+'">+ ميعاد</button>')+'</small></span>'+
+   '<span class="tr-rg">'+trRing(p,58)+'<b class="mono">'+Math.round(p*100)+'%</b></span></div>'+path+
+   '<div class="tr-row"><span>👣 '+nd+' من '+all.length+' خطوة'+(t.m&&mp!=null?' · '+Math.round(sp*100)+'%':'')+'</span><span class="tr-hm sm">'+h14+'</span></div>'+
+   (done?'<div class="tr-here done">🏆 وصلت لآخر التراك</div>':t.arch?'<div class="tr-here">⏸ متوقف مؤقتاً</div>':cur?'<div class="tr-here"><small>إنت هنا: المرحلة '+(cur.i+1)+' · '+esc(t.st[cur.i].n)+'</small><div class="tr-next"><button type="button" class="tr-cb" data-trstep="'+t.id+'|'+cur.s.id+'" aria-label="خلصتها"></button><b>'+esc(cur.s.t)+'</b></div></div>':'')+
+   '<div class="pl-pace '+pace.c+'">'+esc(pace.s)+'</div>'+met+ses+stages+
+   '<div class="pl-ga"><button type="button" class="minibtn" data-tropen="'+t.id+'">'+(trOpen[t.id]?'▴ اقفل الخطوات':'▾ كل الخطوات')+'</button><button type="button" class="minibtn" data-trpause="'+t.id+'">'+(t.arch?'▶':'⏸')+'</button><button type="button" class="minibtn" data-trren="'+t.id+'" aria-label="غيّر الاسم">✏</button><button type="button" class="svx" data-trdel="'+t.id+'" aria-label="امسح التراك">✕</button></div></div>';}).join('');}
 
 
-buildReport();buildHifz();buildMentor();buildCoach();buildMoney();buildSave();buildComm();buildLessons();buildTaskEditor();renderBackup();initLock();persistStorage();initStore();buildQuick();buildSimple();buildDayflow();try{buildPlans();}catch(e){console.warn('plans',e);}buildNotifs();setupPages();initGo();autoInit();booted=true;RB.firstRender=true;
+buildReport();buildHifz();buildMentor();buildCoach();buildMoney();buildSave();buildComm();buildLessons();buildTaskEditor();renderBackup();initLock();persistStorage();initStore();buildQuick();buildSimple();buildDayflow();try{buildPlans();}catch(e){console.warn('plans',e);}try{buildTracks();}catch(e){console.warn('tracks',e);}buildNotifs();setupPages();initGo();autoInit();booted=true;RB.firstRender=true;
 setSync('local');netChip();render();connect();
 setupFX();nextMoti();startMoti();RB.firstRender=false;
 window.MOS={PT,isRamadan,LK,LS,enableLock,bioAvailable,nfEnable,askLoc,grantStorage,NF,saveNF,S,saveSettings,applyLoc,CITIES,LOC,render,nfRender,spkSchedule,goPage,burst:(n)=>{try{burst(n);}catch(e){}}};
@@ -4345,4 +4562,61 @@ body::before{opacity:.05!important}
  background:linear-gradient(90deg,#ffd166,#ff9a62 50%,#ff6fd8);box-shadow:0 10px 26px rgba(255,111,216,.35)}
 </style>
 
+<style id="trackcss">
+.tracks{border-color:rgba(124,242,156,.28)}
+.tracks textarea{width:100%;min-width:0;resize:vertical;background:rgba(7,11,20,.6);border:1px solid var(--line2);border-radius:10px;color:var(--text);padding:9px 10px;font:inherit;font-size:14.5px;line-height:1.6}
+.tr-ring .bg{fill:none;stroke:rgba(255,255,255,.1);stroke-width:7}
+.tr-ring .fg{fill:none;stroke:var(--mint);stroke-width:7;stroke-linecap:round;transition:stroke-dasharray .6s ease}
+.tr-dash{display:grid;gap:10px;padding:12px;border-radius:16px;background:linear-gradient(135deg,rgba(124,242,156,.09),rgba(76,201,240,.05));border:1px solid rgba(124,242,156,.25);margin-bottom:12px}
+.tr-big{display:flex;align-items:center;gap:12px}.tr-big b{display:block;font-size:30px;line-height:1}.tr-big small{display:block;font-size:12.5px;color:var(--frost);margin-top:4px}
+.tr-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.tr-tiles div{padding:8px 4px;border-radius:12px;background:rgba(7,11,20,.4);border:1px solid var(--line);text-align:center;min-width:0}
+.tr-tiles b{display:block;font-size:17px}.tr-tiles small{display:block;font-size:10.5px;color:var(--frost);line-height:1.3}
+.tr-hm{display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:4px}
+.tr-hm i{display:block;aspect-ratio:1;border-radius:5px;background:rgba(255,255,255,.06);border:1px solid var(--line)}
+.tr-hm i.l1{background:rgba(124,242,156,.45);border-color:rgba(124,242,156,.6)}.tr-hm i.l2{background:var(--mint);border-color:var(--mint)}
+.tr-hm i.now{outline:2px solid var(--frost);outline-offset:1px}
+.tr-hm.sm{display:inline-grid;width:126px;gap:2px}.tr-hm.sm i{border-radius:3px}
+.tr-card{padding:12px;border-radius:16px;border:1px solid var(--line);background:rgba(7,11,20,.38);margin-bottom:10px}
+.tr-card.paused{opacity:.6}.tr-card.done{border-color:rgba(124,242,156,.55);box-shadow:0 0 22px rgba(124,242,156,.12)}
+.tr-h{display:flex;align-items:center;gap:10px}.tr-ic{font-size:26px;flex:none}
+.tr-tt{flex:1;min-width:0}.tr-tt b{display:block;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tr-tt small{display:block;font-size:12px;color:var(--frost)}
+.tr-rg{position:relative;flex:none;width:58px;height:58px}.tr-rg b{position:absolute;inset:0;display:grid;place-items:center;font-size:14px}
+.tr-path{display:grid;gap:2px;margin:12px 0 6px;position:relative}
+.tr-path::before{content:"";position:absolute;top:13px;inset-inline:8%;height:2px;background:var(--line2)}
+.tr-node{display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;min-width:0}
+.tr-node i{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:12.5px;font-weight:700;color:var(--frost);
+ background:conic-gradient(rgba(124,242,156,.45) var(--f),#151d33 0);border:2px solid var(--line2)}
+.tr-node small{font-size:10.5px;color:var(--frost);text-align:center;line-height:1.25;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.tr-node.done i{background:var(--mint);border-color:var(--mint);color:#062b14}
+.tr-node.cur i{border-color:var(--sky);color:var(--text);box-shadow:0 0 0 4px rgba(76,201,240,.18),0 0 16px rgba(76,201,240,.35)}
+.tr-node.cur small{color:var(--text);font-weight:700}
+.tr-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:space-between;font-size:12.5px;color:var(--frost);margin-top:8px}
+.tr-nx{color:var(--sky)}
+.tr-here{margin-top:10px;padding:10px;border-radius:12px;border:1px solid rgba(76,201,240,.35);background:rgba(76,201,240,.07)}
+.tr-here small{display:block;font-size:12px;color:var(--sky);margin-bottom:6px}.tr-here.done{border-color:rgba(124,242,156,.5);background:rgba(124,242,156,.08);color:var(--mint)}
+.tr-next{display:flex;align-items:center;gap:10px}.tr-next b{font-size:14.5px;line-height:1.5}
+.tr-cb{flex:none;width:28px;height:28px;border-radius:9px;border:2px solid rgba(124,242,156,.6);background:transparent;color:#062b14;font-weight:800;font-size:15px;cursor:pointer;display:grid;place-items:center}
+.tr-st.ok .tr-cb{background:var(--mint);border-color:var(--mint)}
+.tr-card .pl-pace{margin-top:8px;display:block}
+.tr-met{margin-top:10px;padding:10px;border-radius:12px;background:rgba(255,209,102,.05);border:1px solid rgba(255,209,102,.25)}
+.tr-mh{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px}.tr-mh small{color:var(--frost)}
+.tr-spark{display:block;width:100%;height:38px;margin:6px 0}.tr-spark polyline{fill:none;stroke:var(--gold2);stroke-width:2;vector-effect:non-scaling-stroke}
+.tr-spark .tg{stroke:var(--mint);stroke-width:1;stroke-dasharray:4 4;vector-effect:non-scaling-stroke}
+.tr-met .svact{margin-top:6px}
+.tr-all{margin-top:10px}
+.tr-st{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.tr-st span{flex:1;min-width:0}.tr-st small{display:block;font-size:11px;color:var(--frost)}
+.tr-st.ok span{color:var(--frost);text-decoration:line-through}
+.tr-st .svx{flex:none}
+.tr-addst{margin:6px 0 10px}
+.tr-prev{display:grid;gap:8px;margin-top:4px;padding:12px;border-radius:14px;border:1px solid rgba(124,242,156,.3);background:rgba(124,242,156,.05)}
+.tr-ph{font-size:14px}
+.tr-pst{margin:0;padding-inline-start:18px;display:grid;gap:6px}
+.tr-pst b{display:block;font-size:13.5px}.tr-pst small{display:block;font-size:12px;color:var(--frost);line-height:1.5}
+.tr-mf em{font-style:normal;color:var(--gold2)}
+.tr-m3{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr);gap:6px;margin-top:4px}
+.tr-m3 input,.tr-prev>input{width:100%;min-width:0;background:rgba(7,11,20,.6);border:1px solid var(--line2);border-radius:10px;color:var(--text);padding:8px 10px;font:inherit;font-size:14px}
+@media (max-width:380px){.tr-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.tr-hm.sm{display:none}}
+</style>
 </body></html>
