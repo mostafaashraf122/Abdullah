@@ -4031,6 +4031,8 @@ const TR_T={
    ['الأساسيات',['خلّص الأساسيات','5 تمارين صغيرة تطبيق','اعرض شغلك على حد وخد رأيه']],
    ['التطبيق',['أول مشروع كامل','قلّد 3 أعمال لمحترفين','اكتب أخطاءك واتعلم منها']],
    ['الاحتراف',['3 أعمال في بورتفوليو','أول شغل أو عميل 🏆']]]},
+ habit:{n:'عادة',ic:'🔁',per:7,len:10,pref:'any',re:/$^/,
+  st:[['البداية',['حدّد إمتى وفين هتعملها كل يوم','أول 3 أيام','أسبوع كامل']],['التكوين',['أسبوعين','21 يوم من غير ما تقطع']],['الثبات',['40 يوم','66 يوم · بقت عادة 🏆']]]},
  gen:{n:'هدف',ic:'🎯',per:3,len:30,pref:'any',re:/$^/,
   st:[['الوضوح',['اكتب الهدف بالظبط: لما توصله هيبقى شكله إيه؟','اعرف إنت فين دلوقتي','قسّمه لخطوات صغيرة وضيفها هنا']],
    ['البداية',['أول خطوة صغيرة','أسبوع التزام','اعرف أكبر عائق وحلّه']],
@@ -4132,7 +4134,7 @@ function smKind(txt){const n=trNorm(txt);
  if(SM_TASK.test(n)&&!SM_GOAL.test(n))return 'task';
  if(trDetect(txt)!=='gen'||SM_GOAL.test(n))return 'track';
  return n.split(/\s+/).length<=5?'task':'track';}
-function smTask(txt){const n=trNorm(txt),t0=todayKey();let due='',at='',dur=30,pri=0;
+function smParse(txt){const n=trNorm(txt),t0=todayKey();let due='',at='',dur=30,pri=0;
  if(/بعد بكره|بعد بكرا/.test(n))due=plDays(t0,2);else if(/بكره|بكرا/.test(n))due=plDays(t0,1);else if(/النهارده|انهارده/.test(n))due=t0;
  else{const D=[['الاحد',0],['الحد',0],['الاتنين',1],['التلات',2],['الاربع',3],['الخميس',4],['الجمعه',5],['السبت',6]];const f=D.find(d=>new RegExp('(^|\\s)(يوم\\s+)?'+d[0]).test(n));
   if(f){const cur=parseKey(t0).getDay();due=plDays(t0,((f[1]-cur+7)%7)||7);}}
@@ -4140,14 +4142,17 @@ function smTask(txt){const n=trNorm(txt),t0=todayKey();let due='',at='',dur=30,p
  if(tm){let h=+tm[1]%24;const mm=+(tm[2]||0),z=tm[3]||'';if(/بالليل|مساء|^م$|العصر|المغرب/.test(z)&&h<12)h+=12;else if(!z&&h>=1&&h<=7)h+=12;at=pad(h)+':'+pad(mm);if(!due)due=t0;}
  const dm=/(\d+)\s*(دقيقه|دقايق|د\b)/.exec(n);if(dm)dur=Math.max(5,Math.min(240,+dm[1]));else if(/ساعتين/.test(n))dur=120;else if(/ساعه ونص/.test(n))dur=90;else if(/\bساعه\b/.test(n)&&!tm)dur=60;
  if(/عاجل|ضروري|مستعجل|حالا|فورا/.test(n))pri=2;else if(/مهم/.test(n))pri=1;
- const x={id:uid(),t:txt.trim().slice(0,60),dur,pri,due,at,c:Date.now()};PL.tasks.push(x);savePL();plReplan(true);
- const w=plWhere(x.id);return {ic:pri===2?'🔥':'📌',title:'اتضافت لمهامك: '+x.t,sub:w?'حطيتها '+plDayName(w.k)+' الساعة '+MOSPlan.fmt(w.it.min):'ملقتش وقت فاضي قريب، هتلاقيها في قايمة المهام',go:'#plTasks'};}
+ return {due,at,dur,pri};}
+function smTask(txt,o){o=o||{};const P=smParse(txt);const due=o.due!=null?o.due:P.due,dur=o.dur||P.dur,pri=o.pri!=null?o.pri:P.pri,at=P.at;
+ const x={id:uid(),t:txt.trim().slice(0,60),dur,pri,due,at,c:Date.now()};
+ {const t0=todayKey(),we=plDays(t0,6-parseKey(t0).getDay());if(due&&due>t0&&!(o.due===we))x.nb=due;}PL.tasks.push(x);savePL();plReplan(true);
+ const w=plWhere(x.id);return {ic:pri===2?'🔥':'📌',title:'اتضافت لمهامك: '+x.t,sub:w?(x.nb&&w.k!==x.nb?plDayName(x.nb)+' مفيهوش '+plDur(dur)+' فاضية ورا بعض، فـ':'')+'حطيتها '+plDayName(w.k)+' الساعة '+MOSPlan.fmt(w.it.min):'ملقتش وقت فاضي قريب، هتلاقيها في قايمة المهام',go:'#plTasks'};}
 /* a course: a goal with lessons + a track whose steps are the lessons in chunks (ticked by themselves as he logs lessons) */
-function smCourse(txt){const n=trNorm(txt);const L=/(\d+)\s*(درس|دروس|فيديو|فيديوهات|محاضره|محاضرات|حلقه|حلقات|موديول|جزء)/.exec(n);const dn=/(خلصت|خالص|عديت)\s*(\d+)/.exec(n);
- const tot=L?+L[1]:20;const cl=trTopic(trN(txt).replace(/(خلصت|خالص|عديت)\s*\d+\s*\S*/g,'').replace(/\d+\s*(درس|دروس|فيديو|فيديوهات|محاضرة|محاضره|محاضرات|حلقة|حلقه|حلقات|موديول|جزء)/g,'').replace(/\s+/g,' ').trim());const g={id:uid(),t:cl.slice(0,40)||'كورس',ic:'🎓',kind:'course',total:tot,done:dn?Math.min(tot,+dn[2]):0,unit:'درس',per:3,len:45,pref:'evening',time:'',by:'',log:{},c:Date.now()};
+function smCourse(txt,o){o=o||{};const n=trNorm(txt);const L=/(\d+)\s*(درس|دروس|فيديو|فيديوهات|محاضره|محاضرات|حلقه|حلقات|موديول|جزء)/.exec(n);const dn=/(خلصت|خالص|عديت)\s*(\d+)/.exec(n);
+ const tot=o.les||(L?+L[1]:20);const cl=trTopic(trN(txt).replace(/(خلصت|خالص|عديت)\s*\d+\s*\S*/g,'').replace(/\d+\s*(درس|دروس|فيديو|فيديوهات|محاضرة|محاضره|محاضرات|حلقة|حلقه|حلقات|موديول|جزء)/g,'').replace(/\s+/g,' ').trim());const g={id:uid(),t:cl.slice(0,40)||'كورس',ic:'🎓',kind:'course',total:tot,done:dn?Math.min(tot,+dn[2]):0,unit:'درس',per:o.per||3,len:o.len||45,pref:'evening',time:'',by:'',log:{},c:Date.now()};
  const ty=trDetect(txt);if(ty==='lang'){g.ic='🗣';}else if(ty==='code')g.ic='💻';else if(ty==='skill')g.ic='🎨';
  PL.goals.push(g);savePL();const t=trFromGoal(g);plReplan(true);const w=plWhere(g.id);
- return {ic:g.ic,title:'عملتلك تراك للكورس: '+g.t,sub:t.st.length+' مراحل · '+tot+' درس'+(L?'':' (غيّر العدد من «أهدافك وكورساتك»)')+(w?' · أول جلسة '+plDayName(w.k)+' '+MOSPlan.fmt(w.it.min):''),go:'#tracks'};}
+ return {ic:g.ic,title:'عملتلك تراك للكورس: '+g.t,sub:t.st.length+' مراحل · '+tot+' درس'+(L||o.les?'':' (غيّر العدد من «أهدافك وكورساتك»)')+(w?' · أول جلسة '+plDayName(w.k)+' '+MOSPlan.fmt(w.it.min):''),go:'#tracks'};}
 function trCourseStages(g){const tot=Math.max(1,+g.total||1),ch=tot<=10?1:tot<=40?5:10,steps=[];
  for(let a=1;a<=tot;a+=ch){const b=Math.min(tot,a+ch-1);steps.push({id:uid(),t:a===b?'الدرس '+a:'الدروس '+a+'–'+b,d:'',u:b});}
  const k=steps.length<=4?1:steps.length<=8?2:steps.length<=15?3:4,per=Math.ceil(steps.length/k),names=['البداية','نص الطريق','الجزء التالت','الأخير'],st=[];
@@ -4164,21 +4169,54 @@ function trSyncCourse(t,g,quiet){if(!t||!g||g.kind!=='course')return;const d=+g.
  trSteps(t).forEach(x=>{if(x.u!=null){const on=x.u<=d;if(on&&!x.d){x.d=todayKey();ch=true;}else if(!on&&x.d){x.d='';ch=true;}}});
  if(ch&&!quiet)saveTR();return ch;}
 function trSyncAll(){let ch=false;TR.tracks.forEach(t=>{if(t.ty!=='course'||!t.gid)return;const g=plGoal(t.gid);if(g&&trSyncCourse(t,g,true))ch=true;});if(ch)saveTR();}
-function smAdd(){const inp=$('#smTxt');const txt=(inp.value||'').trim();if(!txt){inp.focus();return;}const k=smKind(txt);let r;
- if(k==='task')r=smTask(txt);else if(k==='course')r=smCourse(txt);
- else{const ty=trDetect(txt);const t={id:uid(),t:trTopic(txt).slice(0,40),desc:txt.slice(0,160),ty,ic:TR_T[ty].ic,c:todayKey(),by:'',st:trBuildStages(ty,txt),m:trMetric(ty,txt),act:{},gid:''};
+const SM_K=[['task','📌','مهمة','مرة واحدة'],['course','🎓','كورس','فيه دروس'],['track','🧭','هدف','تراك بمراحل'],['habit','🔁','عادة','بتتكرر']];
+let SM={};const smReset=()=>{SM={k:'',ty:'',due:null,dur:0,pri:null,les:0,per:0,len:0};};smReset();
+function smGuessKind(txt){const k=smKind(txt);if(k==='track'&&trDetect(txt)==='gen'&&/كل يوم|يوميا|عاده|اتعود|كل اسبوع/.test(trNorm(txt)))return 'habit';return k;}
+function smOpts(){const box=$('#smOpts');if(!box)return;const txt=($('#smTxt').value||'').trim();if(txt.length<2){box.innerHTML='';return;}
+ const k=SM.k||smGuessKind(txt),t0=todayKey();
+ const ch=(attr,v,lbl,on)=>'<button type="button" class="sm-ch'+(on?' on':'')+'" data-'+attr+'="'+v+'">'+lbl+'</button>';
+ let h='<div class="sm-q">دي إيه؟</div><div class="sm-chs">'+SM_K.map(x=>ch('smk',x[0],x[1]+' '+x[2]+'<small>'+x[3]+'</small>',x[0]===k)).join('')+'</div>';
+ let where='',look='';
+ if(k==='task'){const P=smParse(txt);const due=SM.due!=null?SM.due:P.due,dur=SM.dur||P.dur,pri=SM.pri!=null?SM.pri:P.pri;
+  const we=plDays(t0,6-parseKey(t0).getDay());const D=[['','أي وقت فاضي'],[t0,'النهارده'],[plDays(t0,1),'بكرة'],[we,'قبل آخر الأسبوع']];if(due&&!D.some(d=>d[0]===due))D.push([due,plDayName(due)]);
+  h+='<div class="sm-q">إمتى؟</div><div class="sm-chs">'+D.map(d=>ch('smdue',d[0],d[1],d[0]===due)).join('')+'</div>'+
+   '<div class="sm-q">هتاخد قد إيه؟</div><div class="sm-chs">'+[[15,'ربع ساعة'],[30,'نص ساعة'],[60,'ساعة'],[120,'ساعتين']].map(d=>ch('smdur',d[0],d[1],d[0]===dur)).join('')+'</div>'+
+   '<div class="sm-q">أهميتها؟</div><div class="sm-chs">'+[[0,'📌 عادي'],[1,'⭐ مهم'],[2,'🔥 عاجل']].map(d=>ch('smpri',d[0],d[1],d[0]===pri)).join('')+'</div>';
+  where='في «مهامي» · '+(due?plDayName(due):'أول وقت فاضي')+(P.at?' الساعة '+MOSPlan.fmt(MOSPlan.toMin(P.at)):'');
+  look='<div class="pl-it"><span class="pl-tm mono">'+(P.at?MOSPlan.fmt(MOSPlan.toMin(P.at)):'⏱')+'</span><span class="pl-ic">'+(pri===2?'🔥':pri===1?'⭐':'📌')+'</span><span class="pl-tx"><b>'+esc(txt.slice(0,60))+'</b><small>'+plDur(dur)+(due?' · '+plDayName(due):'')+'</small></span><span class="pl-ok">✓</span></div>';}
+ else{const ty=k==='habit'?'habit':k==='course'?'course':(SM.ty||trDetect(txt));const T=TR_T[ty]||{per:3,len:45,ic:'🎓',n:'كورس'};
+  const per=SM.per||(k==='course'?3:T.per),len=SM.len||(k==='course'?45:T.len);
+  if(k==='course'){const L=/(\d+)\s*(درس|دروس|فيديو|فيديوهات|محاضره|محاضرات|حلقه|حلقات|موديول)/.exec(trNorm(txt));const les=SM.les||(L?+L[1]:20);
+   h+='<div class="sm-q">فيه كام درس؟</div><div class="sm-chs"><input id="smLes" type="number" inputmode="numeric" min="1" value="'+les+'"> '+[10,20,30,60].map(n=>ch('smles',n,n+' درس',n===les)).join('')+'</div>';}
+  if(k==='track'){h+='<div class="sm-q">في أنهي مجال؟ (بيحدد المراحل والخطوات)</div><div class="sm-chs">'+Object.keys(TR_T).filter(x=>x!=='habit').map(x=>ch('smty',x,TR_T[x].ic+' '+TR_T[x].n,x===ty)).join('')+'</div>';}
+  h+='<div class="sm-q">كام مرة في الأسبوع؟</div><div class="sm-chs">'+[[1,'مرة'],[2,'مرتين'],[3,'3'],[5,'5'],[7,'كل يوم']].map(d=>ch('smper',d[0],d[1],d[0]===per)).join('')+'</div>'+
+   '<div class="sm-q">المرة قد إيه؟</div><div class="sm-chs">'+[[10,'10 د'],[15,'15 د'],[30,'30 د'],[45,'45 د'],[60,'ساعة']].map(d=>ch('smlen',d[0],d[1],d[0]===len)).join('')+'</div>';
+  const st=k==='course'?trCourseStages({total:SM.les||((/(\d+)\s*(درس|دروس|فيديو|محاضر|حلق|موديول)/.exec(trNorm(txt))||[])[1]||20)}):trBuildStages(ty,txt);
+  where='في «تراكاتي» ('+st.length+' مراحل · '+st.reduce((a,s)=>a+s.s.length,0)+' خطوة) + '+per+' جلسات في الأسبوع في جدولك';
+  look='<div class="tr-card sm-mock"><div class="tr-h"><span class="tr-ic">'+esc(k==='course'?'🎓':T.ic)+'</span><span class="tr-tt"><b>'+esc(trTopic(txt).slice(0,40))+'</b><small>'+esc(k==='course'?'كورس':T.n)+' · '+per+'× '+plDur(len)+'</small></span><span class="tr-rg">'+trRing(0,46)+'<b class="mono">0%</b></span></div>'+
+   '<div class="tr-path" style="grid-template-columns:repeat('+st.length+',minmax(0,1fr))">'+st.map((s,i)=>'<div class="tr-node'+(i?'':' cur')+'"><i style="--f:0%">'+(i+1)+'</i><small>'+esc(s.n)+'</small></div>').join('')+'</div>'+
+   '<div class="tr-here"><small>أول خطوة</small><div class="tr-next"><span class="tr-cb"></span><b>'+esc(st[0].s[0].t)+'</b></div></div></div>';}
+ h+='<div class="sm-where">📍 هتتحط '+esc(where)+'</div><div class="sm-look">'+look+'</div>';
+ box.innerHTML=h;}
+function smAdd(){const inp=$('#smTxt');const txt=(inp.value||'').trim();if(!txt){inp.focus();return;}const k=SM.k||smGuessKind(txt);let r;
+ if(k==='task')r=smTask(txt,SM);else if(k==='course')r=smCourse(txt,SM);
+ else{const ty=k==='habit'?'habit':(SM.ty||trDetect(txt));const t={id:uid(),t:trTopic(txt).slice(0,40),desc:txt.slice(0,160),ty,ic:TR_T[ty].ic,c:todayKey(),by:'',st:trBuildStages(ty,txt),m:k==='habit'?null:trMetric(ty,txt),act:{},gid:''};
   if(t.m&&(t.m.tg===''||t.m.tg==null)&&!t.m.delta)t.m=null;if(t.m){t.m.log={};if(t.m.s!=='')t.m.log[todayKey()]=t.m.s;}
-  TR.tracks.unshift(t);trAddGoal(t,TR_T[ty].per,TR_T[ty].len,TR_T[ty].pref);saveTR();plReplan(true);const w=t.gid&&plWhere(t.gid);
-  r={ic:t.ic,title:'عملتلك تراك: '+t.t,sub:TR_T[ty].n+' · '+t.st.length+' مراحل · '+trSteps(t).length+' خطوة'+(w?' · أول جلسة '+plDayName(w.k)+' '+MOSPlan.fmt(w.it.min):''),go:'#tracks'};}
- inp.value='';$('#smHint').textContent='';try{renderTracks();}catch(e){}toast(r.ic,r.title,r.sub);setTimeout(()=>{try{jump(r.go);flash($(r.go));}catch(e){}},350);}
-const SM_LBL={task:'📌 هتتضاف كمهمة وأحطها في وقت فاضي',course:'🎓 كورس · هعمله تراك بالدروس وأوزّع الجلسات',track:'🧭 هدف · هعمله تراك بمراحل وخطوات'};
+  TR.tracks.unshift(t);trAddGoal(t,SM.per||TR_T[ty].per,SM.len||TR_T[ty].len,TR_T[ty].pref);saveTR();plReplan(true);const w=t.gid&&plWhere(t.gid);
+  r={ic:t.ic,title:(k==='habit'?'بدأنا العادة: ':'عملتلك تراك: ')+t.t,sub:TR_T[ty].n+' · '+t.st.length+' مراحل · '+trSteps(t).length+' خطوة'+(w?' · أول جلسة '+plDayName(w.k)+' '+MOSPlan.fmt(w.it.min):''),go:'#tracks'};}
+ inp.value='';smReset();smOpts();try{renderTracks();}catch(e){}toast(r.ic,r.title,r.sub);setTimeout(()=>{try{jump(r.go);flash($(r.go));}catch(e){}},350);}
 function buildSmart(){if($('#smart'))return;const box=$('#plChk');if(!box)return;
  const w=el('div','sm-box');w.id='smart';
- w.innerHTML='<div class="sm-row"><input id="smTxt" maxlength="160" placeholder="ضيف أي حاجة… (أكلّم البنك بكرة الساعة 11 · كورس فوتوشوب 30 درس · أخس 8 كيلو)" enterkeyhint="done"><button type="button" class="minibtn gold" id="smGo">ضيف</button></div><div class="sm-hint" id="smHint"></div>';
+ w.innerHTML='<div class="sm-row"><input id="smTxt" maxlength="160" placeholder="ضيف أي حاجة… (أكلّم البنك بكرة · كورس فوتوشوب · أخس 8 كيلو)" enterkeyhint="done"><button type="button" class="minibtn gold" id="smGo">ضيف</button></div><div id="smOpts"></div>';
  box.insertAdjacentElement('beforebegin',w);
  $('#smGo').addEventListener('click',smAdd);
  $('#smTxt').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();smAdd();}});
- $('#smTxt').addEventListener('input',e=>{const v=e.target.value.trim();$('#smHint').textContent=v.length>2?SM_LBL[smKind(v)]:'';});}
+ let tm;$('#smTxt').addEventListener('input',e=>{if(!e.target.value.trim())smReset();clearTimeout(tm);tm=setTimeout(smOpts,250);});
+ w.addEventListener('input',e=>{if(e.target.id==='smLes'){SM.les=Math.max(1,Math.round(+e.target.value||0));clearTimeout(tm);tm=setTimeout(()=>{smOpts();const i=$('#smLes');if(i){i.focus();i.setSelectionRange&&0;}},600);}});
+ w.addEventListener('click',e=>{const b=e.target.closest('.sm-ch');if(!b)return;const d=b.dataset;
+  if(d.smk!=null){if(SM.k!==d.smk){const keep=SM.k;smReset();SM.k=d.smk;}}
+  else if(d.smty!=null)SM.ty=d.smty;else if(d.smdue!=null)SM.due=d.smdue;else if(d.smdur!=null)SM.dur=+d.smdur;else if(d.smpri!=null)SM.pri=+d.smpri;
+  else if(d.smper!=null)SM.per=+d.smper;else if(d.smlen!=null)SM.len=+d.smlen;else if(d.smles!=null)SM.les=+d.smles;smOpts();});}
 
 function trPrev(){const box=$('#trPrev');if(!box||!TRD)return;const D=TRD,opt=(a,v)=>a.map(x=>'<option value="'+x[0]+'"'+(x[0]==v?' selected':'')+'>'+x[1]+'</option>').join('');const m=D.m||{u:'',s:'',tg:''};
  box.innerHTML='<div class="tr-prev"><div class="tr-ph">'+esc(D.ic)+' فهمت إنه <b>'+esc(TR_T[D.ty].n)+'</b> · ده التراك بتاعك</div>'+
@@ -4628,7 +4666,14 @@ body::before{opacity:.05!important}
 .sm-box{margin-bottom:12px;padding:10px;border-radius:14px;border:1px solid rgba(255,209,102,.35);background:linear-gradient(90deg,rgba(255,209,102,.08),rgba(124,242,156,.05))}
 .sm-row{display:flex;gap:6px}.sm-row input{flex:1;min-width:0;background:rgba(7,11,20,.6);border:1px solid var(--line2);border-radius:10px;color:var(--text);padding:10px;font:inherit;font-size:14.5px}
 .sm-row .minibtn{flex:none;padding:0 16px}
-.sm-hint{font-size:12.5px;color:var(--gold2);margin-top:6px}.sm-hint:empty{display:none}
+.sm-q{font-size:12.5px;color:var(--frost);margin:10px 0 5px}
+.sm-chs{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.sm-ch{padding:7px 11px;border-radius:12px;border:1px solid var(--line2);background:rgba(7,11,20,.35);color:var(--frost);font:inherit;font-size:13px;cursor:pointer;line-height:1.3}
+.sm-ch small{display:block;font-size:10.5px;opacity:.8}
+.sm-ch.on{border-color:var(--gold2);color:var(--text);background:rgba(255,209,102,.14);box-shadow:0 0 0 1px rgba(255,209,102,.25)}
+#smLes{width:80px;background:rgba(7,11,20,.6);border:1px solid var(--line2);border-radius:10px;color:var(--text);padding:7px 9px;font:inherit;font-size:14px}
+.sm-where{margin-top:12px;font-size:13px;color:var(--gold2)}
+.sm-look{margin-top:6px;opacity:.92;pointer-events:none}.sm-look .pl-it{margin:0}.sm-mock{margin:0}
 </style>
 <style id="trackcss">
 .tracks{border-color:rgba(124,242,156,.28)}
